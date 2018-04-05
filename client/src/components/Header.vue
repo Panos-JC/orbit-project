@@ -1,11 +1,14 @@
 <template>
   <v-toolbar>
-    <v-toolbar-title>orbit-project</v-toolbar-title>
+    <v-toolbar-title class="mr-3">orbit-project</v-toolbar-title>
+    <v-toolbar-items class="hidden-sm-and-down">
+      <v-btn flat>Users</v-btn>
+      <v-btn flat>Browse</v-btn>
+    </v-toolbar-items>
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-sm-and-down">
-      <v-btn flat>Link One</v-btn>
-      <v-btn flat>Link Two</v-btn>
-      <v-btn flat>Link Three</v-btn>
+      <v-btn flat>Login</v-btn>
+      <v-btn flat>Register</v-btn>
     </v-toolbar-items>
   </v-toolbar>
 </template>
