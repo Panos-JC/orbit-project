@@ -1,7 +1,7 @@
 <template>
 <v-container grid-list-md>
-  <v-layout>
-    <v-flex xs3 v-for="n in 4" :key="n">
+  <v-layout wrap>
+    <v-flex xs3 v-for="user in users" :key="user">
       <v-card>
         <v-card-media
           class="white--text"
@@ -12,10 +12,10 @@
         <v-card-title class="card-title">
           <div class="card-container">
             <v-avatar class="avatar" size="65">
-              <img src="https://api.adorable.io/avatars/285/panos.png" alt="">
+              <img :src="'https://api.adorable.io/avatars/285/' + user.user.properties.username + 'panos.png'" alt="">
             </v-avatar>
-            <a href="" class="name text-xs-left">Panos Chatz</a>
-            <a href="" class="username text-xs-left">@panos</a>
+            <a href="" class="name text-xs-left">{{user.user.properties.fname}} {{user.user.properties.lname}}</a>
+            <a href="" class="username text-xs-left">@{{user.user.properties.username}}</a>
           </div>
           <v-btn v-if="!following" small outline round color="primary" class="follow">Follow</v-btn>
           <v-btn v-if="following" small depressed round color="primary" class="follow following" v-on:mouseover="word='Unfollow'" @mouseleave="word='Following'">{{word}}</v-btn>
@@ -30,12 +30,19 @@
 </template>
 
 <script>
+import UsersService from '@/services/UsersService'
+
 export default {
   data () {
     return {
       following: false,
-      word: 'Following'
+      word: 'Following',
+      users: null
     }
+  },
+  async mounted () {
+    this.users = (await UsersService.index()).data
+    console.log(this.users[0].user.properties)
   }
 }
 </script>
@@ -46,6 +53,7 @@ export default {
 }
 .card-container {
   position: relative;
+  max-width: 60%;
 
   .name {
     display: block;
