@@ -20,7 +20,8 @@
     "express": "^4.16.2",
     "joi": "^13.1.2",
     "jsonwebtoken": "^8.2.0",
-    "morgan": "^1.9.0"
+    "morgan": "^1.9.0",
+    "neo4j": "^2.0.0-RC2"
   },
   "devDependencies": {
     "eslint-config-standard": "^11.0.0",
