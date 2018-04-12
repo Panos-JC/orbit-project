@@ -12,7 +12,7 @@
         <v-card-title class="card-title">
           <div class="card-container">
             <v-avatar class="avatar" size="65">
-              <img :src="'https://api.adorable.io/avatars/285/' + user.user.properties.username + 'panos.png'" alt="">
+              <img :src="'https://api.adorable.io/avatars/285/' + user.user.properties.username + '.png'" alt="">
             </v-avatar>
             <a href="" class="name text-xs-left">{{user.user.properties.fname}} {{user.user.properties.lname}}</a>
             <a href="" class="username text-xs-left">@{{user.user.properties.username}}</a>
