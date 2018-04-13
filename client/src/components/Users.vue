@@ -1,6 +1,11 @@
 <template>
 <v-container grid-list-md>
-  <v-layout wrap>
+  <v-layout>
+    <v-flex xs12>
+      <jawn v-if="showLoading" size="100" class="spinner"></jawn>
+    </v-flex>
+  </v-layout>
+  <v-layout wrap v-if="!showLoading">
     <v-flex xs3 v-for="user in users" :key="user">
       <v-card>
         <v-card-media
@@ -30,6 +35,7 @@
 </template>
 
 <script>
+import {Jawn} from 'vue-loading-spinner'
 import UsersService from '@/services/UsersService'
 
 export default {
@@ -37,17 +43,26 @@ export default {
     return {
       following: false,
       word: 'Following',
-      users: null
+      users: null,
+      showLoading: true
     }
   },
   async mounted () {
     this.users = (await UsersService.index()).data
     console.log(this.users[0].user.properties)
+    this.showLoading = false
+  },
+  components: {
+    Jawn
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.spinner {
+  display: inline-block;
+  margin: 200px auto;
+}
 .card-title {
   padding: 10px;
 }
