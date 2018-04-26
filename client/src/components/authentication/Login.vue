@@ -11,13 +11,27 @@
           </v-toolbar>
           <v-card-text>
             <v-form>
-              <v-text-field prepend-icon="person" name="email" label="Email" type="text"></v-text-field>
-              <v-text-field prepend-icon="lock" name="password" label="Password" id="password" type="password"></v-text-field>
+              <v-text-field
+                prepend-icon="person"
+                name="username"
+                label="Username"
+                type="text"
+                v-model="username"
+              ></v-text-field>
+              <v-text-field
+                prepend-icon="lock"
+                name="password"
+                label="Password"
+                id="password"
+                type="password"
+                v-model="password"
+              ></v-text-field>
             </v-form>
+            <div class="error">{{error}}</div>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary">Login</v-btn>
+            <v-btn color="primary" @click="login">Login</v-btn>
           </v-card-actions>
         </v-card>
       </v-flex>
@@ -26,6 +40,36 @@
 </template>
 
 <script>
+import AuthenticationService from '@/services/AuthenticationService'
+
 export default {
+  data () {
+    return {
+      username: '',
+      password: '',
+      error: null
+    }
+  },
+  methods: {
+    async login () {
+      try {
+        const response = await AuthenticationService.login({
+          username: this.username,
+          password: this.password
+        })
+
+        this.$store.dispatch('setToken', response.data.token)
+        this.$store.dispatch('setUser', response.data.user)
+
+        this.$router.push({
+          name: 'profile',
+          params: {
+            username: this.$store.state.user.properties.username
+          }})
+      } catch (error) {
+        this.error = error.response.data.message
+      }
+    }
+  }
 }
 </script>
