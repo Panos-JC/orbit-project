@@ -1,12 +1,12 @@
 <template>
 <v-layout column>
-  <v-flex xs12 v-for="n in 5" :key="n">
+  <v-flex xs12 v-for="post in posts" :key="post._id">
     <v-card hover>
       <v-container>
         <v-layout>
           <v-flex xs1>
             <v-avatar>
-              <img src="https://api.adorable.io/avatars/285/panos.png" alt="avatar">
+              <img :src="'https://api.adorable.io/avatars/285/' + userData.username + '.png'" alt="avatar">
             </v-avatar>
           </v-flex>
           <v-flex xs11>
@@ -14,15 +14,15 @@
               <a href="" class="post-header-link text-xs-left">
                 <span class="fullNameGroup text-xs-left">
                 <strong class="fullName text-xs-left">
-                  Panos Chatz
+                  {{userData.fname}} {{userData.lname}}
                 </strong>
                 </span>
-                <span class="username">@panos</span>
+                <span class="username">@{{userData.username}}</span>
                 <small class="date">15h</small>
               </a>
             </div>
             <div class="post-container ml-3">
-              <p class="postText text-xs-left">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Delectus dolorem beatae magnam reiciendis consequatur cupiditate magni officia est, minima cum inventore quasi voluptate blanditiis molestias voluptatem, recusandae omnis sit veniam?</p>
+              <p class="postText text-xs-left">{{post.properties.content}}</p>
             </div>
           </v-flex>
         </v-layout>
@@ -34,6 +34,10 @@
 
 <script>
 export default {
+  props: [
+    'posts',
+    'userData'
+  ]
 }
 </script>
 
