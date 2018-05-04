@@ -39,4 +39,13 @@ module.exports = (app, passport) => {
 
   app.get('/users',
     UserController.list)
+
+  app.get('/users/:username',
+    UserController.show)
+
+  app.get('/users/:username/followers',
+    UserController.followers)
+
+  app.get('/users/:username/following',
+    UserController.following)
 }
