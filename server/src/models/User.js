@@ -82,6 +82,58 @@ User.create = (data, callback) => {
   })
 }
 
+// Get user stats (following, followers, posts)
+User.getStats = (username, callback) => {
+  const qp = {
+    query: [
+      'OPTIONAL MATCH (u:User {username: {username}})-[:FOLLOWS]->(following:User)',
+      'WITH u, COUNT(following) AS following',
+      'OPTIONAL MATCH (u)-[:POSTED]->(p:Post)',
+      'WITH u, COUNT(p) AS posts, following',
+      'OPTIONAL MATCH (u)<-[:FOLLOWS]-(follower:User)',
+      'RETURN posts, COUNT(follower) as followers, following'
+    ].join('\n'),
+    params: { username }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) return callback(err)
+    callback(null, result[0])
+  })
+}
+
+// Get user's followers list
+User.getFollowers = (username, callback) => {
+  const qp = {
+    query: [
+      'MATCH (u:User {username: {username}})<-[:FOLLOWS]-(user:User)',
+      'RETURN collect(user) AS users'
+    ].join('\n'),
+    params: { username }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) callback(err)
+    callback(null, result[0]['users'])
+  })
+}
+
+// Get user's following list
+User.getFollowing = (username, callback) => {
+  const qp = {
+    query: [
+      'MATCH (u:User {username: {username}})-[:FOLLOWS]->(user:User)',
+      'RETURN collect(user) AS users'
+    ].join('\n'),
+    params: { username }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) callback(err)
+    callback(null, result[0]['users'])
+  })
+}
+
 // Passport Functions
 
 User.generateHash = (password, next) => {
