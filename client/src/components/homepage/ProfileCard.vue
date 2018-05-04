@@ -1,5 +1,5 @@
 <template>
-<v-card>
+<v-card v-if="$store.state.isUserLoggedIn">
   <v-card-media
     class="white--text"
     height="100px"
@@ -9,10 +9,10 @@
   <v-card-title class="card-title">
     <div class="card-container">
       <v-avatar class="avatar" size="65">
-        <img src="https://api.adorable.io/avatars/285/panos.png" alt="">
+        <img :src="'https://api.adorable.io/avatars/285/' + $store.state.user.properties.username + '.png'" alt="">
       </v-avatar>
-      <a href="" class="name text-xs-left">Panos Chatz</a>
-      <a href="" class="username text-xs-left">@panos</a>
+      <a href="" class="name text-xs-left">{{$store.state.user.properties.fname}} {{$store.state.user.properties.lname}}</a>
+      <a href="" class="username text-xs-left">@{{$store.state.user.properties.username}}</a>
     </div>
   </v-card-title>
   <v-card-actions class="actions">
