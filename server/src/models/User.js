@@ -51,7 +51,7 @@ User.getAll = (callback) => {
   const qp = {
     query: [
       'MATCH (user:User)',
-      'RETURN user',
+      'RETURN collect(user) AS users',
       'LIMIT 100'
     ].join('\n')
   }
@@ -60,7 +60,7 @@ User.getAll = (callback) => {
     if (err) return callback(err)
     console.log('User.getAll: ')
     console.log(result)
-    callback(null, result)
+    callback(null, result[0]['users'])
   })
 }
 
