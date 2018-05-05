@@ -41,6 +41,7 @@
 
 <script>
 import AuthenticationService from '@/services/AuthenticationService'
+import UsersService from '@/services/UsersService'
 
 export default {
   data () {
@@ -58,8 +59,12 @@ export default {
           password: this.password
         })
 
+        const following = await UsersService.following(this.username)
+
         this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUser', response.data.user)
+
+        this.$store.dispatch('setFollowing', following.data.following)
 
         this.$router.push({
           name: 'profile',

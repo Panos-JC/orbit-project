@@ -8,6 +8,7 @@ export default new Vuex.Store({
   state: {
     token: null,
     user: null,
+    following: null,
     isUserLoggedIn: false
   },
   mutations: {
@@ -21,6 +22,9 @@ export default new Vuex.Store({
     },
     setUser (state, user) {
       state.user = user
+    },
+    setFollowing (state, following) {
+      state.following = following
     }
   },
   actions: {
@@ -29,6 +33,9 @@ export default new Vuex.Store({
     },
     setUser ({commit}, user) {
       commit('setUser', user)
+    },
+    setFollowing ({commit}, following) {
+      commit('setFollowing', following)
     }
   }
 })

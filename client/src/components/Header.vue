@@ -27,6 +27,7 @@ export default {
     logout () {
       this.$store.dispatch('setToken', null)
       this.$store.dispatch('setUser', null)
+      this.$store.dispatch('setFollowing', null)
       this.$router.push({
         name: 'home'
       })
