@@ -48,5 +48,25 @@ module.exports = {
 
       res.send({ following })
     })
+  },
+
+  // Follow user
+  async follow (req, res, next) {
+    User.addUserRel('follow', req.body.user1, req.body.user2, (err) => {
+      if (err) return next(err)
+      res.send('Followed')
+    })
+  },
+
+  // Unfollow user
+  async unFollow (req, res, next) {
+    User.addUserRel('unfollow', req.body.user1, req.body.user2, (err) => {
+      if (err) {
+        console.log('UserController error')
+        return next(err)
+      }
+      console.log('UserController')
+      res.send('Unfollowed')
+    })
   }
 }

@@ -25,6 +25,17 @@ export default new Vuex.Store({
     },
     setFollowing (state, following) {
       state.following = following
+    },
+    // Adds user in the following array
+    addFollowing (state, username) {
+      state.following.push(username)
+    },
+    // Remove user from following array
+    removeFollowing (state, username) {
+      const index = state.following.indexOf(username)
+      if (index > -1) {
+        state.following.splice(index, 1)
+      }
     }
   },
   actions: {

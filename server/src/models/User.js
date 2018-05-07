@@ -134,6 +134,46 @@ User.getFollowing = (username, callback) => {
   })
 }
 
+// Add relationship between two users
+User.addUserRel = (rel, user1, user2, callback) => {
+  let qp = {}
+  switch (rel) {
+    case 'follow':
+      qp = {
+        query: [
+          'MATCH (user:User {username: {user}}), (other:User {username: {otherUser}})',
+          'MERGE (user)-[r:FOLLOWS]->(other)',
+          'ON CREATE SET r.timestamp = timestamp()',
+          'RETURN r'
+        ].join('\n'),
+        params: {
+          user: user1,
+          otherUser: user2
+        }
+      }
+      break
+
+    case 'unfollow':
+      qp = {
+        query: [
+          'MATCH (user:User {username: {user}})-[r:FOLLOWS]->(other:User {username: {otherUser}})',
+          'DELETE r'
+        ].join('\n'),
+        params: {
+          user: user1,
+          otherUser: user2
+        }
+      }
+      break
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) callback(err)
+    console.log('FOLLOW/UNFOLLOW')
+    callback(null)
+  })
+}
+
 // Passport Functions
 
 User.generateHash = (password, next) => {

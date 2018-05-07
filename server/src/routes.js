@@ -48,4 +48,10 @@ module.exports = (app, passport) => {
 
   app.get('/users/:username/following',
     UserController.following)
+
+  app.post('/follow',
+    UserController.follow)
+
+  app.post('/unfollow',
+    UserController.unFollow)
 }
