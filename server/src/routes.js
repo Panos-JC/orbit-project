@@ -1,4 +1,6 @@
 const UserController = require('./controllers/UserController')
+const PostController = require('./controllers/PostController')
+const PlacesApiController = require('./controllers/PlacesApiController')
 const jwt = require('jsonwebtoken')
 const config = require('./config/config')
 
@@ -48,4 +50,19 @@ module.exports = (app, passport) => {
 
   app.get('/users/:username/following',
     UserController.following)
+
+  app.post('/follow',
+    UserController.follow)
+
+  app.post('/unfollow',
+    UserController.unFollow)
+
+  app.post('/places/search',
+    PlacesApiController.search)
+
+  app.post('/places/photo',
+    PlacesApiController.photo)
+
+  app.post('/post/create',
+    PostController.create)
 }

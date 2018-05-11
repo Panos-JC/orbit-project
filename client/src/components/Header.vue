@@ -4,7 +4,7 @@
     <v-toolbar-items class="hidden-sm-and-down">
       <v-btn flat to="/home">Home</v-btn>
       <v-btn flat to="/users">Users</v-btn>
-      <v-btn flat>Browse</v-btn>
+      <v-btn flat to="/browse">Browse</v-btn>
     </v-toolbar-items>
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-sm-and-down">

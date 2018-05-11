@@ -7,6 +7,7 @@ import Users from '@/components/Users'
 import Profile from '@/components/profile/Profile'
 import Following from '@/components/profile/Following'
 import Followers from '@/components/profile/Followers'
+import Browse from '@/components/browse/Browse'
 
 Vue.use(Router)
 
@@ -50,6 +51,11 @@ export default new Router({
       path: '/users/:username/followers',
       name: 'followers',
       component: Followers
+    },
+    {
+      path: '/browse',
+      name: 'browse',
+      component: Browse
     }
   ]
 })
