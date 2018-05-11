@@ -1,29 +1,5 @@
 <template>
 <v-layout column>
-  <v-flex xs12>
-    <v-card>
-      <v-container>
-        <v-layout row>
-          <v-flex xs2>
-            <v-avatar size="35" class="avatar-top">
-              <img src="https://api.adorable.io/avatars/285/panos.png" alt="avatar">
-            </v-avatar>
-          </v-flex>
-          <v-flex xs10 class="input pr-5">
-            <v-text-field
-            class="post-input"
-              name="input-1"
-              label="What's happening?"
-              id="testing"
-              multi-line
-              no-resize
-            ></v-text-field>
-            <v-btn depressed round color="primary" class="post-btn">Post</v-btn>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-card>
-  </v-flex>
   <v-flex xs12 v-for="n in 5" :key="n">
     <v-card hover>
       <v-container>
