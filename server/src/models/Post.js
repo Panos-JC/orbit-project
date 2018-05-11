@@ -36,3 +36,23 @@ Post.getUserPosts = (username, callback) => {
     callback(null, result[0])
   })
 }
+
+// Create post
+Post.createPost = (username, content, callback) => {
+  const qp = {
+    query: [
+      'MATCH (user:User {username: {username}})',
+      'CREATE (user)-[r:POSTED]->(post:Post {content: {content}, timestamp: timestamp()})',
+      'RETURN user, post'
+    ].join('\n'),
+    params: {
+      username,
+      content
+    }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) return callback(err)
+    callback(null, result)
+  })
+}
