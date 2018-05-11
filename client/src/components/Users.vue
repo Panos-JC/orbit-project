@@ -1,59 +1,94 @@
 <template>
-<v-container grid-list-md>
+<v-container grid-list-md v-if="$store.state.isUserLoggedIn">
   <v-layout>
     <v-flex xs12>
       <jawn v-if="showLoading" size="100" class="spinner"></jawn>
     </v-flex>
   </v-layout>
   <v-layout wrap v-if="!showLoading">
-    <v-flex xs3 v-for="user in users" :key="user">
-      <v-card>
-        <v-card-media
-          class="white--text"
-          height="100px"
-          src="https://dummyimage.com/600x200/858585/ffffff"
-        >
-        </v-card-media>
-        <v-card-title class="card-title">
-          <div class="card-container">
-            <v-avatar class="avatar" size="65">
-              <img :src="'https://api.adorable.io/avatars/285/' + user.user.properties.username + '.png'" alt="">
-            </v-avatar>
-            <a href="" class="name text-xs-left">{{user.user.properties.fname}} {{user.user.properties.lname}}</a>
-            <a href="" class="username text-xs-left">@{{user.user.properties.username}}</a>
-          </div>
-          <v-btn v-if="!following" small outline round color="primary" class="follow">Follow</v-btn>
-          <v-btn v-if="following" small depressed round color="primary" class="follow following" v-on:mouseover="word='Unfollow'" @mouseleave="word='Following'">{{word}}</v-btn>
-        </v-card-title>
-        <v-card-actions class="actions">
-          <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
-        </v-card-actions>
-      </v-card>
+    <v-flex xs3 v-for="(user) in users" :key="user.userData.username" v-if="user.userData.username !== $store.state.user.properties.username">
+      <user-card
+        v-if="!showLoading"
+        :user="user.userData"
+        :following="user.isFollowing"
+        @followed="follow = true"
+        @unfollow="unfollow = true"
+      ></user-card>
     </v-flex>
   </v-layout>
+  <v-snackbar
+    top
+    color="success"
+    :timeout = 2000
+    v-model="follow">
+    Followed
+    <v-btn flat @click.native="follow = false">Close</v-btn>
+  </v-snackbar>
+  <v-snackbar
+    top
+    color="error"
+    :timeout = 2000
+    v-model="unfollow">
+    Unfollowed
+    <v-btn flat @click.native="unfollow = false">Close</v-btn>
+  </v-snackbar>
 </v-container>
 </template>
 
 <script>
 import {Jawn} from 'vue-loading-spinner'
 import UsersService from '@/services/UsersService'
+import UserCard from '@/components/UserCard'
 
 export default {
   data () {
     return {
-      following: false,
-      word: 'Following',
-      users: null,
-      showLoading: true
+      users: [],
+      showLoading: true,
+      follow: false,
+      unfollow: false
     }
   },
-  async mounted () {
-    this.users = (await UsersService.index()).data
-    console.log(this.users[0].user.properties)
+  async created () {
+    const data = (await UsersService.index()).data
+    const following = this.$store.state.following
+
+    this.showButtons(data, following)
+
     this.showLoading = false
   },
+  methods: {
+    async showButtons (data, following) {
+      let found = false
+      for (let i = 0; i < data.length; i++) {
+        if (following) {
+          for (let j = 0; j < following.length; j++) {
+            if (data[i].properties.username === following[j]) {
+              found = true
+              break
+            }
+          }
+          if (found) {
+            this.users[i] = {
+              userData: data[i].properties,
+              isFollowing: true
+            }
+          } else {
+            this.users[i] = {
+              userData: data[i].properties,
+              isFollowing: false
+            }
+          }
+        } else {
+          this.users[i] = { userData: data[i].properties }
+        }
+        found = false
+      }
+    }
+  },
   components: {
-    Jawn
+    Jawn,
+    UserCard
   }
 }
 </script>
@@ -62,62 +97,5 @@ export default {
 .spinner {
   display: inline-block;
   margin: 200px auto;
-}
-.card-title {
-  padding: 10px;
-}
-.card-container {
-  position: relative;
-  max-width: 60%;
-
-  .name {
-    display: block;
-    color: #14171a;
-    text-decoration: none;
-    margin-top: 30px;
-    font-weight: bold;
-    font-size: 18px;
-    line-height: 25px;
-    max-width: 100%;
-    overflow: hidden!important;
-    text-overflow: ellipsis!important;
-    white-space: nowrap!important;
-    word-wrap: normal!important;
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-  .username {
-    display: block;
-    font-size: 12px;
-    padding-right: 12px;
-    color: #66757f;
-    text-decoration: none;
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-}
-
-.avatar {
-  position: absolute;
-  top: -40px;
-  left: 0;
-  img {
-    border: 3px solid #fff;
-  }
-}
-
-.follow {
-  position: absolute;
-  right: 10px;
-  font-size: 11px;
-}
-
-.following {
-  &:hover {
-    background-color: #ac002b!important;
-    content: "ela";
-  }
 }
 </style>
