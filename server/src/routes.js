@@ -56,6 +56,7 @@ module.exports = (app, passport) => {
 
   app.post('/unfollow',
     UserController.unFollow)
+<<<<<<< HEAD
 
   app.post('/places/search',
     PlacesApiController.search)
@@ -65,4 +66,6 @@ module.exports = (app, passport) => {
 
   app.post('/post/create',
     PostController.create)
+=======
+>>>>>>> 66459df10df03beb03870c4a048cc0e8d0edc700
 }
