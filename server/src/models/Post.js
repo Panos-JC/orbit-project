@@ -37,12 +37,16 @@ Post.getUserPosts = (username, callback) => {
   })
 }
 
-// Create post
+// Create post with a unique id
 Post.createPost = (username, content, callback) => {
   const qp = {
     query: [
+      'MERGE (id:UniqueId {name: "Post"})',
+      'ON CREATE SET id.count = 1',
+      'ON MATCH SET id.count = id.count + 1',
+      'WITH id.count AS uid',
       'MATCH (user:User {username: {username}})',
-      'CREATE (user)-[r:POSTED]->(post:Post {content: {content}, timestamp: timestamp()})',
+      'CREATE (user)-[r:POSTED]->(post:Post {id:uid, content: {content}, timestamp: timestamp()})',
       'RETURN user, post'
     ].join('\n'),
     params: {
