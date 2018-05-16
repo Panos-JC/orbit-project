@@ -1,35 +1,35 @@
 <template>
 <div>
-  <v-card>
+  <v-card v-if="postData">
     <v-container class="pb-1">
       <v-layout wrap>
         <v-flex xs1>
-          <a :href="'#/users/panos'">
+          <a :href="'#/users/' + postData.followee.properties.username">
             <v-avatar>
-              <img :src="'https://api.adorable.io/avatars/285/panos.png'" alt="avatar">
+              <img :src="'https://api.adorable.io/avatars/285/' + postData.followee.properties.username + '.png'" alt="avatar">
             </v-avatar>
           </a>
         </v-flex>
         <v-flex xs11 class="pb-0">
           <div class="post-header ml-3">
-            <a :href="'#/users/panos'" class="post-header-link text-xs-left">
+            <a :href="'#/users/' + postData.followee.properties.username" class="post-header-link text-xs-left">
               <span class="fullNameGroup text-xs-left">
               <strong class="fullName text-xs-left">
-                Panos J. Chatziioannou
+                {{fullName}}
               </strong>
               </span>
-              <span class="username">@panos</span>
+              <span class="username">@{{postData.followee.properties.username}}</span>
               <small class="date">15h</small>
             </a>
           </div>
           <div class="post-container ml-3">
             <p class="postText text-xs-left mb-1">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsa natus expedita a doloribus enim debitis porro nam quaerat beatae, neque quia velit, unde veritatis doloremque odio provident officia itaque. Consequatur?
+              {{postData.post.properties.content}}
             </p>
           </div>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn icon to="users/panos/post/1">
+            <v-btn icon :to="'post/' + postData.post.properties.id">
               <v-icon>reply</v-icon>
             </v-btn>
             <v-btn icon  @click="liked=true" v-if="!liked">
@@ -63,9 +63,17 @@ export default {
       dialog: false
     }
   },
+  computed: {
+    fullName () {
+      return this.postData.followee.properties.fname + ' ' + this.postData.followee.properties.lname
+    }
+  },
   components: {
     ExtendedPost
-  }
+  },
+  props: [
+    'postData'
+  ]
 }
 </script>
 

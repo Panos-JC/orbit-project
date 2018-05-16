@@ -1,15 +1,25 @@
 <template>
 <v-layout column>
-  <v-flex xs12 v-for="n in 5" :key="n">
-    <post></post>
+  <v-flex xs12 v-for="postData in posts" :key="postData.post.properties.id">
+    <post :postData="postData"></post>
   </v-flex>
 </v-layout>
 </template>
 
 <script>
 import Post from '@/components/Post'
+import PostService from '@/services/PostService'
 
 export default {
+  data () {
+    return {
+      posts: []
+    }
+  },
+  async created () {
+    this.posts = (await PostService.getPosts(this.$store.state.user.properties.username)).data
+    console.log(this.posts)
+  },
   components: {
     Post
   }

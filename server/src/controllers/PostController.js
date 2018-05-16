@@ -10,5 +10,16 @@ module.exports = {
         res.send(result)
       }
     })
+  },
+
+  // Get posts of friends
+  async index (req, res, next) {
+    await Post.getPosts(req.params.username, (err, posts) => {
+      if (err) {
+        res.status(400).send(err)
+      } else {
+        res.send(posts)
+      }
+    })
   }
 }

@@ -21,6 +21,24 @@ Post.getAll = (callback) => {
   })
 }
 
+// Get posts of friends
+Post.getPosts = (username, callback) => {
+  const qp = {
+    query: [
+      'MATCH (user:User {username: {username}})-[:FOLLOWS]->(followee:User)',
+      'MATCH (followee)-[:POSTED]->(post:Post)',
+      'RETURN post, followee',
+      'ORDER BY post.timestamp DESC'
+    ].join('\n'),
+    params: { username }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) return callback(err)
+    callback(null, result)
+  })
+}
+
 // Get a user's posts
 Post.getUserPosts = (username, callback) => {
   const qp = {
