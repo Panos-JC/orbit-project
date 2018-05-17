@@ -8,7 +8,7 @@ export default new Vuex.Store({
   state: {
     token: null,
     user: null,
-    following: null,
+    following: [],
     isUserLoggedIn: false
   },
   mutations: {
