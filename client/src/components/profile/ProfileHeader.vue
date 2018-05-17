@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-jumbotron height="300" color="primary" dark>
+    <v-jumbotron height="320" color="primary" dark>
     <v-container fill-height>
       <v-layout align-center>
         <v-flex text-xs-center>
@@ -33,7 +33,27 @@
           </v-toolbar-items>
         </v-flex>
         <v-flex xs3>
-          <v-btn outline round color="grey darken-3" class="edit-btn">Edit Profile</v-btn>
+          <v-btn
+            v-if="isLoggedIn"
+            outline
+            round
+            color="grey darken-3"
+            class="edit-btn"
+          >Edit Profile</v-btn>
+          <v-btn
+            v-if="!isLoggedIn && !isFollowee"
+            outline
+            round
+            color="primary"
+            class="edit-btn"
+          >Follow</v-btn>
+          <v-btn
+            v-if="isFollowee"
+            depressed
+            round
+            color="primary"
+            class="edit-btn"
+          >Following</v-btn>
         </v-flex>
       </v-layout>
     </v-toolbar>
@@ -42,6 +62,16 @@
 
 <script>
 export default {
+  computed: {
+    // If a logged in user is following this user, return true
+    isFollowee () {
+      return this.$store.state.following.includes(this.username)
+    },
+    // If this user is logged in return true
+    isLoggedIn () {
+      return this.$store.state.user.properties.username === this.username
+    }
+  },
   props: [
     'userStats',
     'username'
@@ -51,7 +81,7 @@ export default {
 
 <style lang="scss" scoped>
 .jumbotron {
-  height: 320px !important;
+  height: 270px !important;
 }
 
 .avatar {
