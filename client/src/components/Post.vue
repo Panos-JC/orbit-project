@@ -1,24 +1,23 @@
 <template>
-<div>
   <v-card v-if="postData">
     <v-container class="pb-1">
       <v-layout wrap>
         <v-flex xs1>
-          <a :href="'#/users/' + postData.followee.properties.username">
+          <a :href="'#/users/' + postData.user.properties.username">
             <v-avatar>
-              <img :src="'https://api.adorable.io/avatars/285/' + postData.followee.properties.username + '.png'" alt="avatar">
+              <img :src="'https://api.adorable.io/avatars/285/' + postData.user.properties.username + '.png'" alt="avatar">
             </v-avatar>
           </a>
         </v-flex>
         <v-flex xs11 class="pb-0">
           <div class="post-header ml-3">
-            <a :href="'#/users/' + postData.followee.properties.username" class="post-header-link text-xs-left">
+            <a :href="'#/users/' + postData.user.properties.username" class="post-header-link text-xs-left">
               <span class="fullNameGroup text-xs-left">
               <strong class="fullName text-xs-left">
                 {{fullName}}
               </strong>
               </span>
-              <span class="username">@{{postData.followee.properties.username}}</span>
+              <span class="username">@{{postData.user.properties.username}}</span>
               <small class="date">15h</small>
             </a>
           </div>
@@ -49,7 +48,6 @@
       </v-layout>
     </v-container>
   </v-card>
-</div>
 </template>
 
 <script>
@@ -65,7 +63,7 @@ export default {
   },
   computed: {
     fullName () {
-      return this.postData.followee.properties.fname + ' ' + this.postData.followee.properties.lname
+      return this.postData.user.properties.fname + ' ' + this.postData.user.properties.lname
     }
   },
   components: {

@@ -27,7 +27,7 @@ Post.getPosts = (username, callback) => {
     query: [
       'MATCH (user:User {username: {username}})-[:FOLLOWS]->(followee:User)',
       'MATCH (followee)-[:POSTED]->(post:Post)',
-      'RETURN post, followee',
+      'RETURN post, followee AS user',
       'ORDER BY post.timestamp DESC'
     ].join('\n'),
     params: { username }
@@ -44,14 +44,14 @@ Post.getUserPosts = (username, callback) => {
   const qp = {
     query: [
       'MATCH (user:User {username: {username}})-[:POSTED]->(post:Post)',
-      'RETURN collect(post) AS posts'
+      'RETURN post, user'
     ].join('\n'),
     params: { username }
   }
 
   db.cypher(qp, (err, result) => {
     if (err) return callback(err)
-    callback(null, result[0])
+    callback(null, result)
   })
 }
 

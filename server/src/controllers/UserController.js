@@ -25,7 +25,7 @@ module.exports = {
           res.send({
             user,
             stats,
-            posts: posts.posts
+            posts: posts
           })
         })
       })

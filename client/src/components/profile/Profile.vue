@@ -7,7 +7,11 @@
         <user-info v-if="dataLoaded" :userData="user.properties"></user-info>
       </v-flex>
       <v-flex xs6>
-        <profile-posts :posts="userPosts" :userData="user.properties"></profile-posts>
+        <v-layout column>
+          <v-flex xs12 v-for="postData in userPosts" :key="postData.post.properties.id">
+            <post :postData="postData"></post>
+          </v-flex>
+        </v-layout>
       </v-flex>
       <v-flex xs3></v-flex>
     </v-layout>
@@ -19,14 +23,14 @@
 import UsersService from '@/services/UsersService'
 import ProfileHeader from './ProfileHeader'
 import UserInfo from './UserInfo'
-import ProfilePosts from './ProfilePosts'
+import Post from '@/components/Post'
 
 export default {
   data () {
     return {
       user: {},
       userStats: {},
-      userPosts: {},
+      userPosts: [],
       dataLoaded: false
     }
   },
@@ -39,7 +43,7 @@ export default {
     this.dataLoaded = true
   },
   components: {
-    ProfilePosts,
+    Post,
     ProfileHeader,
     UserInfo
   }
