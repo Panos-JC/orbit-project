@@ -39,6 +39,7 @@ module.exports = (app, passport) => {
     res.send('This is the server')
   })
 
+  // User Routes
   app.get('/users',
     UserController.list)
 
@@ -51,8 +52,8 @@ module.exports = (app, passport) => {
   app.get('/users/:username/following',
     UserController.following)
 
-  app.get('/posts/:username',
-    PostController.index)
+  app.get('/users/:username/likes',
+    UserController.getLikedPosts)
 
   app.post('/follow',
     UserController.follow)
@@ -63,6 +64,16 @@ module.exports = (app, passport) => {
   app.post('/places/search',
     PlacesApiController.search)
 
+  // Post Routes
   app.post('/post/create',
     PostController.create)
+
+  app.get('/posts/:username',
+    PostController.index)
+
+  app.post('/post/like',
+    PostController.like)
+
+  app.post('/post/unlike',
+    PostController.unlike)
 }

@@ -27,7 +27,9 @@ Post.getPosts = (username, callback) => {
     query: [
       'MATCH (user:User {username: {username}})-[:FOLLOWS]->(followee:User)',
       'MATCH (followee)-[:POSTED]->(post:Post)',
-      'RETURN post, followee AS user',
+      'WITH post, followee',
+      'OPTIONAL MATCH (post)<-[:LIKED]-(u:User)',
+      'RETURN post, followee AS user, COUNT(u) AS likeCounter',
       'ORDER BY post.timestamp DESC'
     ].join('\n'),
     params: { username }
@@ -44,7 +46,9 @@ Post.getUserPosts = (username, callback) => {
   const qp = {
     query: [
       'MATCH (user:User {username: {username}})-[:POSTED]->(post:Post)',
-      'RETURN post, user'
+      'WITH post, user',
+      'OPTIONAL MATCH (post)<-[:LIKED]-(u:User)',
+      'RETURN post, user, COUNT(u) AS likeCounter'
     ].join('\n'),
     params: { username }
   }
@@ -76,5 +80,50 @@ Post.createPost = (username, content, callback) => {
   db.cypher(qp, (err, result) => {
     if (err) return callback(err)
     callback(null, result)
+  })
+}
+
+// Create like relationship
+Post.like = (username, postId, callback) => {
+  const qp = {
+    query: [
+      'MATCH (user:User {username: {username}}), (post:Post {id: {postId}})',
+      'MERGE (user)-[r:LIKED]->(post)',
+      'RETURN post'
+    ].join('\n'),
+    params: {
+      username,
+      postId: parseInt(postId)
+    }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) return callback(err)
+    console.log(username)
+    console.log(postId)
+    callback(null, result)
+  })
+}
+
+// Unlike post
+Post.unlike = (username, postId, callback) => {
+  const qp = {
+    query: [
+      'MATCH (user:User {username: {username}})-[r:LIKED]->(post:Post {id: {postId}})',
+      'DELETE r'
+    ].join('\n'),
+    params: {
+      username,
+      postId: parseInt(postId)
+    }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) {
+      return callback(err)
+    } else {
+      console.log(result)
+      callback(null, result)
+    }
   })
 }

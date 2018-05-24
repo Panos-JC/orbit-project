@@ -9,6 +9,7 @@ export default new Vuex.Store({
     token: null,
     user: null,
     following: [],
+    likedPosts: [],
     isUserLoggedIn: false
   },
   mutations: {
@@ -23,14 +24,34 @@ export default new Vuex.Store({
     setUser (state, user) {
       state.user = user
     },
+
+    /**
+     * ====== Liked Posts Methods ======
+     */
+
+    setLikedPosts (state, likedPosts) {
+      state.likedPosts = likedPosts
+    },
+    addLikedPost (state, postId) {
+      state.likedPosts.push(postId)
+    },
+    removeLikedPost (state, postId) {
+      const index = state.likedPosts.indexOf(postId)
+      if (index > -1) {
+        state.likedPosts.splice(index, 1)
+      }
+    },
+
+    /**
+     * ====== Following Array Methods ======
+     */
+
     setFollowing (state, following) {
       state.following = following
     },
-    // Adds user in the following array
     addFollowing (state, username) {
       state.following.push(username)
     },
-    // Remove user from following array
     removeFollowing (state, username) {
       const index = state.following.indexOf(username)
       if (index > -1) {
@@ -47,6 +68,9 @@ export default new Vuex.Store({
     },
     setFollowing ({commit}, following) {
       commit('setFollowing', following)
+    },
+    setLikedPosts ({commit}, likedPosts) {
+      commit('setLikedPosts', likedPosts)
     }
   }
 })

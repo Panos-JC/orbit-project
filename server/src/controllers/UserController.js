@@ -68,5 +68,16 @@ module.exports = {
       console.log('UserController')
       res.send('Unfollowed')
     })
+  },
+
+  // Get a user's liked posts
+  async getLikedPosts (req, res, next) {
+    User.getLikedPosts(req.params.username, (err, posts) => {
+      if (err) {
+        res.status(400).send(err)
+      } else {
+        res.send(posts)
+      }
+    })
   }
 }

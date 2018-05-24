@@ -21,5 +21,27 @@ module.exports = {
         res.send(posts)
       }
     })
+  },
+
+  // Like post
+  async like (req, res, next) {
+    await Post.like(req.body.username, req.body.postId, (err, result) => {
+      if (err) {
+        res.status(400).send(err)
+      } else {
+        res.send(result)
+      }
+    })
+  },
+
+  // Unlike post
+  async unlike (req, res, next) {
+    await Post.unlike(req.body.username, req.body.postId, (err, result) => {
+      if (err) {
+        res.status(400).send(err)
+      } else {
+        res.send({message: 'Unliked'})
+      }
+    })
   }
 }

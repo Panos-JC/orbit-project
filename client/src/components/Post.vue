@@ -28,15 +28,22 @@
           </div>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn icon :to="'post/' + postData.post.properties.id">
+            <v-btn icon :to="'/post/' + postData.post.properties.id">
               <v-icon>reply</v-icon>
             </v-btn>
-            <v-btn icon  @click="liked=true" v-if="!liked">
-              <v-icon color="black">favorite_border</v-icon>
-            </v-btn>
-            <v-btn icon  @click="liked=false" v-if="liked">
-              <v-icon color="red">favorite</v-icon>
-            </v-btn>
+            <button v-if="!liked" class="postActionButton" @click="like">
+              <div class="iconContainer">
+                <v-icon>favorite_border</v-icon>
+              </div>
+              <span class="actionCount">{{likeCounter}}</span>
+            </button>
+            <button v-if="liked" class="postActionButton postActionButton-active" @click="unlike">
+              <div class="iconContainer">
+                <v-icon>favorite</v-icon>
+              </div>
+              <span class="actionCount">{{likeCounter}}</span>
+            </button>
+
             <v-btn icon @click="reposted=true" v-if="!reposted">
               <v-icon color="black">repeat</v-icon>
             </v-btn>
@@ -47,24 +54,103 @@
         </v-flex>
       </v-layout>
     </v-container>
+    <v-snackbar
+      bottom
+      left
+      :timeout=2000
+      color="success"
+      v-model="successSnackbar"
+    >
+      {{ message }}
+      <v-btn flat @click.native="successSnackbar = false">Close</v-btn>
+    </v-snackbar>
+    <v-snackbar
+      bottom
+      left
+      :timeout=2000
+      color="error"
+      v-model="errorSnackbar"
+    >
+      {{ message }}
+      <v-btn flat @click.native="errorSnackbar = false">Close</v-btn>
+    </v-snackbar>
   </v-card>
 </template>
 
 <script>
 import ExtendedPost from '@/components/ExtendedPost'
+import PostService from '@/services/PostService'
 
 export default {
   data () {
     return {
       liked: false,
+      likeCounter: 0,
       reposted: false,
-      dialog: false
+      dialog: false,
+      message: '',
+      successSnackbar: false,
+      errorSnackbar: false
     }
   },
   computed: {
     fullName () {
       return this.postData.user.properties.fname + ' ' + this.postData.user.properties.lname
     }
+  },
+  methods: {
+    async like () {
+      try {
+        const data = {
+          username: this.$store.state.user.properties.username,
+          postId: this.postData.post.properties.id
+        }
+
+        // like post
+        const response = (await PostService.like(data))
+        console.log(response)
+
+        // add post id into store's likedPosts array
+        this.$store.commit('addLikedPost', this.postData.post.properties.id)
+
+        this.liked = true
+        this.likeCounter++
+        this.message = 'You liked a post'
+        this.successSnackbar = true
+      } catch (error) {
+        this.message = 'Something went wrong'
+        this.errorSnackbar = true
+      }
+    },
+    async unlike () {
+      try {
+        const data = {
+          username: this.$store.state.user.properties.username,
+          postId: this.postData.post.properties.id
+        }
+
+        // unlike post
+        const response = (await PostService.unlike(data))
+        console.log(response)
+
+        // remove post id from store's likedPosts array
+        this.$store.commit('removeLikedPost', this.postData.post.properties.id)
+
+        this.liked = false
+        this.likeCounter--
+        this.message = 'Unlikes post'
+        this.successSnackbar = true
+      } catch (error) {
+        this.message = 'Something went wrong'
+        this.errorSnackbar = true
+      }
+    }
+  },
+  created () {
+    if (this.$store.state.likedPosts.includes(this.postData.post.properties.id)) {
+      this.liked = true
+    }
+    this.likeCounter = this.postData.likeCounter
   },
   components: {
     ExtendedPost
@@ -121,5 +207,48 @@ small.date {
   color: #657786;
   white-space: nowrap;
   margin-left: 5px;
+}
+
+.postActionButton {
+  display: inline-block;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 2px;
+  position: relative;
+  &:hover .iconContainer i, &:hover .actionCount {
+    color: #e0245e;
+  }
+  .iconContainer {
+    color: #657786;
+    display: inline-block;
+    line-height: 0;
+    position: relative;
+    vertical-align: middle;
+    width: 30px;
+    transition: color 0s;
+  }
+  .actionCount {
+    color: #657786;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1;
+    position: relative;
+    vertical-align: text-bottom;
+    transition: color 0s;
+  }
+}
+
+.postActionButton-active {
+  .iconContainer i{
+    color: #e0245e;
+  }
+  .actionCount {
+    color: #e0245e;
+  }
+}
+
+*:focus {
+  outline: none;
 }
 </style>

@@ -59,6 +59,7 @@ export default {
           password: this.password
         })
 
+        // get followees
         const data = (await UsersService.following(this.username)).data.following
 
         // extract usernames from data
@@ -67,11 +68,23 @@ export default {
           following[i] = data[i].properties.username
         }
 
+        // get liked posts
+        const likedPosts = (await UsersService.getLikedPosts(this.username)).data
+
+        // extract ids from posts
+        let likedPostsIdArray = []
+        for (let i = 0; i < likedPosts.length; i++) {
+          likedPostsIdArray[i] = likedPosts[i].post.properties.id
+        }
+
         this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUser', response.data.user)
 
         // pass only the usernames
         this.$store.dispatch('setFollowing', following)
+
+        // pass only the ids
+        this.$store.dispatch('setLikedPosts', likedPostsIdArray)
 
         this.$router.push({
           name: 'profile',
@@ -79,7 +92,7 @@ export default {
             username: this.$store.state.user.properties.username
           }})
       } catch (error) {
-        this.error = error.response.data.message
+        console.log(error)
       }
     }
   }

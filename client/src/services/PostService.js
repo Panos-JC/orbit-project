@@ -9,5 +9,15 @@ export default {
   // Get posts of friends
   getPosts (username) {
     return Api().get(`posts/${username}`, username)
+  },
+
+  // Like Post
+  like (data) {
+    return Api().post('post/like', data)
+  },
+
+  // Unike post
+  unlike (data) {
+    return Api().post('post/unlike', data)
   }
 }

@@ -174,6 +174,22 @@ User.addUserRel = (rel, user1, user2, callback) => {
   })
 }
 
+// Get a user's liked posts
+User.getLikedPosts = (username, callback) => {
+  const qp = {
+    query: [
+      'MATCH (user:User {username: {username}})-[:LIKED]->(post:Post)',
+      'RETURN post'
+    ].join('\n'),
+    params: { username }
+  }
+
+  db.cypher(qp, (err, posts) => {
+    if (err) callback(err)
+    callback(null, posts)
+  })
+}
+
 // Passport Functions
 
 User.generateHash = (password, next) => {
