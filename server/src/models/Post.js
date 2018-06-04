@@ -25,12 +25,19 @@ Post.getAll = (callback) => {
 Post.getPosts = (username, callback) => {
   const qp = {
     query: [
-      'MATCH (user:User {username: {username}})-[:FOLLOWS]->(followee:User)',
-      'MATCH (followee)-[:POSTED]->(post:Post)',
-      'WITH post, followee',
-      'OPTIONAL MATCH (post)<-[:LIKED]-(u:User)',
-      'RETURN post, followee AS user, COUNT(u) AS likeCounter',
-      'ORDER BY post.timestamp DESC'
+      'MATCH (user:User {username: {username}})-[:FOLLOWS]->(followee:User)-[p:POSTED|REPOSTED]->(post:Post)',
+      'MATCH (post)<-[:POSTED]-(poster:User)',
+      'OPTIONAL MATCH (post)<-[:REPOSTED]-(reposter:User)',
+      'WITH followee, post, poster, COUNT(reposter) AS reposts, p',
+      'OPTIONAL MATCH (post)<-[:LIKED]-(liker:User)',
+      'WITH {id: post.id, content: post.content,',
+      '      poster: {username: poster.username, fname: poster.fname, lname: poster.lname},',
+      '        reposter: CASE WHEN type(p) = "POSTED" THEN NULL ELSE followee.username END,',
+      '        reposts: reposts,',
+      '        likes: COUNT(liker)',
+      '      } AS post, p',
+      'RETURN post',
+      'ORDER BY p.timestamp DESC'
     ].join('\n'),
     params: { username }
   }
@@ -45,10 +52,20 @@ Post.getPosts = (username, callback) => {
 Post.getUserPosts = (username, callback) => {
   const qp = {
     query: [
-      'MATCH (user:User {username: {username}})-[:POSTED]->(post:Post)',
-      'WITH post, user',
-      'OPTIONAL MATCH (post)<-[:LIKED]-(u:User)',
-      'RETURN post, user, COUNT(u) AS likeCounter'
+      'MATCH (user:User {username: {username}})-[p:POSTED|REPOSTED]->(post:Post)',
+      'MATCH (post)<-[:POSTED]-(poster:User)',
+      'OPTIONAL MATCH (post)<-[:REPOSTED]-(reposter:User)',
+      'WITH user, post, poster, COUNT(reposter) AS reposts, p',
+      'OPTIONAL MATCH (post)<-[:LIKED]-(liker:User)',
+      'WITH {id: post.id,',
+      '    content: post.content,',
+      '        poster: {username: poster.username, fname: poster.fname, lname: poster.lname},',
+      '        reposter: CASE WHEN type(p) = "REPOSTED" THEN user.username ELSE NULL END,',
+      '        reposts: reposts,',
+      '        likes: COUNT(liker)',
+      '      } AS post, p',
+      'RETURN post',
+      'ORDER BY p.timestamp DESC'
     ].join('\n'),
     params: { username }
   }
@@ -68,7 +85,7 @@ Post.createPost = (username, content, callback) => {
       'ON MATCH SET id.count = id.count + 1',
       'WITH id.count AS uid',
       'MATCH (user:User {username: {username}})',
-      'CREATE (user)-[r:POSTED]->(post:Post {id:uid, content: {content}, timestamp: timestamp()})',
+      'CREATE (user)-[r:POSTED {timestamp: timestamp()}]->(post:Post {id:uid, content: {content}, timestamp: timestamp()})',
       'RETURN user, post'
     ].join('\n'),
     params: {
@@ -125,5 +142,44 @@ Post.unlike = (username, postId, callback) => {
       console.log(result)
       callback(null, result)
     }
+  })
+}
+
+// Repost
+Post.repost = (username, postId, callback) => {
+  const qp = {
+    query: [
+      'MATCH (user:User {username: {username}}), (post:Post {id: {postId}})',
+      'MERGE (user)-[r:REPOSTED {timestamp: timestamp()}]->(post)',
+      'RETURN user, post'
+    ].join('\n'),
+    params: {
+      username,
+      postId: parseInt(postId)
+    }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) return callback(err)
+    callback(null, result)
+  })
+}
+
+// Remove repost
+Post.removeRepost = (username, postId, callback) => {
+  const qp = {
+    query: [
+      'MATCH (user:User {username: {username}})-[r:REPOSTED]->(post:Post {id: {postId}})',
+      'DELETE r'
+    ].join('\n'),
+    params: {
+      username,
+      postId: parseInt(postId)
+    }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) return callback(err)
+    callback(null, result)
   })
 }

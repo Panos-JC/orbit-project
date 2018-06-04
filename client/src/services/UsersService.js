@@ -25,6 +25,11 @@ export default {
     return Api().get(`users/${username}/likes`, username)
   },
 
+  // Get liked posts
+  getReposts (username) {
+    return Api().get(`users/${username}/reposts`, username)
+  },
+
   // Follow user
   follow (data) {
     return Api().post('follow', data)

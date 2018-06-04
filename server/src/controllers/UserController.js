@@ -79,5 +79,16 @@ module.exports = {
         res.send(posts)
       }
     })
+  },
+
+  // Get a user's reposts
+  async getReposts (req, res, next) {
+    User.getReposts(req.params.username, (err, posts) => {
+      if (err) {
+        res.status(400).send(err)
+      } else {
+        res.send(posts)
+      }
+    })
   }
 }

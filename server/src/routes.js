@@ -55,6 +55,9 @@ module.exports = (app, passport) => {
   app.get('/users/:username/likes',
     UserController.getLikedPosts)
 
+  app.get('/users/:username/reposts',
+    UserController.getReposts)
+
   app.post('/follow',
     UserController.follow)
 
@@ -76,4 +79,10 @@ module.exports = (app, passport) => {
 
   app.post('/post/unlike',
     PostController.unlike)
+
+  app.post('/post/repost',
+    PostController.repost)
+
+  app.post('/post/removeRepost',
+    PostController.removeRepost)
 }

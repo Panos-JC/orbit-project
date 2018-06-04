@@ -77,6 +77,15 @@ export default {
           likedPostsIdArray[i] = likedPosts[i].post.properties.id
         }
 
+        // get reposts
+        const reposts = (await UsersService.getReposts(this.username)).data
+
+        // extract ids from posts
+        let repostsIdArray = []
+        for (let i = 0; i < reposts.length; i++) {
+          repostsIdArray[i] = reposts[i].post.properties.id
+        }
+
         this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUser', response.data.user)
 
@@ -85,6 +94,7 @@ export default {
 
         // pass only the ids
         this.$store.dispatch('setLikedPosts', likedPostsIdArray)
+        this.$store.dispatch('setReposts', repostsIdArray)
 
         this.$router.push({
           name: 'profile',

@@ -19,5 +19,15 @@ export default {
   // Unike post
   unlike (data) {
     return Api().post('post/unlike', data)
+  },
+
+  // Repost
+  repost (data) {
+    return Api().post('post/repost', data)
+  },
+
+  // Undo Repost
+  removeRepost (data) {
+    return Api().post('post/removeRepost', data)
   }
 }

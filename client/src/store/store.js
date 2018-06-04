@@ -10,6 +10,7 @@ export default new Vuex.Store({
     user: null,
     following: [],
     likedPosts: [],
+    reposts: [],
     isUserLoggedIn: false
   },
   mutations: {
@@ -43,6 +44,23 @@ export default new Vuex.Store({
     },
 
     /**
+     * ====== Reposts Methods ======
+     */
+
+    setReposts (state, reposts) {
+      state.reposts = reposts
+    },
+    addRepost (state, postId) {
+      state.reposts.push(postId)
+    },
+    removeRepost (state, postId) {
+      const index = state.reposts.indexOf(postId)
+      if (index > -1) {
+        state.reposts.splice(index, 1)
+      }
+    },
+
+    /**
      * ====== Following Array Methods ======
      */
 
@@ -71,6 +89,9 @@ export default new Vuex.Store({
     },
     setLikedPosts ({commit}, likedPosts) {
       commit('setLikedPosts', likedPosts)
+    },
+    setReposts ({commit}, reposts) {
+      commit('setReposts', reposts)
     }
   }
 })

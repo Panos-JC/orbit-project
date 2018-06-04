@@ -8,8 +8,8 @@
       </v-flex>
       <v-flex xs6>
         <v-layout column>
-          <v-flex xs12 v-for="postData in userPosts" :key="postData.post.properties.id">
-            <post :postData="postData"></post>
+          <v-flex xs12 v-for="postData in userPosts" :key="postData.post.id">
+            <post :postData="postData.post"></post>
           </v-flex>
         </v-layout>
       </v-flex>
@@ -34,7 +34,7 @@ export default {
       dataLoaded: false
     }
   },
-  async mounted () {
+  async created () {
     const username = this.$store.state.route.params.username
     const data = (await UsersService.show(username)).data
     this.user = data.user

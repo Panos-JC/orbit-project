@@ -2,33 +2,44 @@
   <v-card v-if="postData">
     <v-container class="pb-1">
       <v-layout wrap>
+        <v-flex xs12 v-if="postData.reposter">
+          <div class="postContext">
+            <span class="repostIcon">
+              <v-icon>repeat</v-icon>
+            </span>
+            <span class="repostText">
+              <a href="">{{reposter}}</a>
+              Reposted
+            </span>
+          </div>
+        </v-flex>
         <v-flex xs1>
-          <a :href="'#/users/' + postData.user.properties.username">
+          <a :href="'#/users/' + postData.poster.username">
             <v-avatar>
-              <img :src="'https://api.adorable.io/avatars/285/' + postData.user.properties.username + '.png'" alt="avatar">
+              <img :src="'https://api.adorable.io/avatars/285/' + postData.poster.username + '.png'" alt="avatar">
             </v-avatar>
           </a>
         </v-flex>
         <v-flex xs11 class="pb-0">
           <div class="post-header ml-3">
-            <a :href="'#/users/' + postData.user.properties.username" class="post-header-link text-xs-left">
+            <a :href="'#/users/' + postData.poster.username" class="post-header-link text-xs-left">
               <span class="fullNameGroup text-xs-left">
               <strong class="fullName text-xs-left">
                 {{fullName}}
               </strong>
               </span>
-              <span class="username">@{{postData.user.properties.username}}</span>
+              <span class="username">@{{postData.poster.username}}</span>
               <small class="date">15h</small>
             </a>
           </div>
           <div class="post-container ml-3">
             <p class="postText text-xs-left mb-1">
-              {{postData.post.properties.content}}
+              {{postData.content}}
             </p>
           </div>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn icon :to="'/post/' + postData.post.properties.id">
+            <v-btn icon :to="'/post/' + postData.id">
               <v-icon>reply</v-icon>
             </v-btn>
             <button v-if="!liked" class="postActionButton" @click="like">
@@ -44,12 +55,18 @@
               <span class="actionCount">{{likeCounter}}</span>
             </button>
 
-            <v-btn icon @click="reposted=true" v-if="!reposted">
-              <v-icon color="black">repeat</v-icon>
-            </v-btn>
-            <v-btn icon @click="reposted=false" v-if="reposted">
-              <v-icon color="green">repeat</v-icon>
-            </v-btn>
+            <button v-if="!reposted" class="postActionButton" @click="repost">
+              <div class="iconContainer iconRepost">
+                <v-icon>repeat</v-icon>
+              </div>
+              <span class="actionCount actionCount-repost">{{repostCounter}}</span>
+            </button>
+            <button v-if="reposted" class="postActionButton postActionButton-active-repost" @click="removeRepost">
+              <div class="iconContainer iconRepost">
+                <v-icon>repeat</v-icon>
+              </div>
+              <span class="actionCount actionCount-repost">{{repostCounter}}</span>
+            </button>
           </v-card-actions>
         </v-flex>
       </v-layout>
@@ -87,15 +104,24 @@ export default {
       liked: false,
       likeCounter: 0,
       reposted: false,
+      repostCounter: 0,
       dialog: false,
       message: '',
       successSnackbar: false,
-      errorSnackbar: false
+      errorSnackbar: false,
+      isRepost: false
     }
   },
   computed: {
     fullName () {
-      return this.postData.user.properties.fname + ' ' + this.postData.user.properties.lname
+      return this.postData.poster.fname + ' ' + this.postData.poster.lname
+    },
+    reposter () {
+      if (this.postData.reposter === this.$store.state.user.properties.username) {
+        return 'You'
+      } else {
+        return this.postData.reposter
+      }
     }
   },
   methods: {
@@ -103,7 +129,7 @@ export default {
       try {
         const data = {
           username: this.$store.state.user.properties.username,
-          postId: this.postData.post.properties.id
+          postId: this.postData.id
         }
 
         // like post
@@ -111,7 +137,7 @@ export default {
         console.log(response)
 
         // add post id into store's likedPosts array
-        this.$store.commit('addLikedPost', this.postData.post.properties.id)
+        this.$store.commit('addLikedPost', this.postData.id)
 
         this.liked = true
         this.likeCounter++
@@ -126,7 +152,7 @@ export default {
       try {
         const data = {
           username: this.$store.state.user.properties.username,
-          postId: this.postData.post.properties.id
+          postId: this.postData.id
         }
 
         // unlike post
@@ -134,7 +160,7 @@ export default {
         console.log(response)
 
         // remove post id from store's likedPosts array
-        this.$store.commit('removeLikedPost', this.postData.post.properties.id)
+        this.$store.commit('removeLikedPost', this.postData.id)
 
         this.liked = false
         this.likeCounter--
@@ -144,13 +170,64 @@ export default {
         this.message = 'Something went wrong'
         this.errorSnackbar = true
       }
+    },
+    async repost () {
+      try {
+        const data = {
+          username: this.$store.state.user.properties.username,
+          postId: this.postData.id
+        }
+
+        // repost
+        const response = (await PostService.repost(data))
+        console.log(response)
+
+        // ass post id into store's reposts array
+        this.$store.commit('addRepost', this.postData.id)
+
+        this.reposted = true
+        this.repostCounter++
+        this.message = 'Reposted'
+        this.successSnackbar = true
+      } catch (error) {
+        this.message = 'Something went wrong'
+        this.errorSnackbar = true
+      }
+      console.log('repost')
+    },
+    async removeRepost () {
+      try {
+        const data = {
+          username: this.$store.state.user.properties.username,
+          postId: this.postData.id
+        }
+
+        const response = (await PostService.removeRepost(data))
+        console.log(response)
+
+        this.$store.commit('removeRepost', this.postData.id)
+
+        this.reposted = false
+        this.repostCounter--
+        this.message = 'Repost removed'
+        this.successSnackbar = true
+      } catch (error) {
+        this.message = 'Something went wrong'
+        this.errorSnackbar = true
+      }
     }
   },
   created () {
-    if (this.$store.state.likedPosts.includes(this.postData.post.properties.id)) {
+    if (this.$store.state.likedPosts.includes(this.postData.id)) {
       this.liked = true
     }
-    this.likeCounter = this.postData.likeCounter
+
+    if (this.$store.state.reposts.includes(this.postData.id)) {
+      this.reposted = true
+    }
+
+    this.likeCounter = this.postData.likes
+    this.repostCounter = this.postData.reposts
   },
   components: {
     ExtendedPost
@@ -218,6 +295,9 @@ small.date {
   &:hover .iconContainer i, &:hover .actionCount {
     color: #e0245e;
   }
+  &:hover .iconRepost i, &:hover .actionCount-repost {
+    color: #17bf63;
+  }
   .iconContainer {
     color: #657786;
     display: inline-block;
@@ -248,7 +328,40 @@ small.date {
   }
 }
 
+.postActionButton-active-repost {
+  .iconContainer i{
+    color: #17bf63;
+  }
+  .actionCount {
+    color: #17bf63;
+  }
+}
+
 *:focus {
   outline: none;
+}
+
+.postContext {
+  margin-top: -5px;
+  display: flex;
+  .repostIcon {
+    color: #657786;
+    font-size: 14px;
+    position: relative;
+    top: -2px;
+  }
+  .repostText {
+    font-size: 12px;
+    color: #657786;
+    margin-left: 7px;
+    a {
+      color: #657786;
+      text-decoration: none;
+      margin-right: 3px;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
 }
 </style>

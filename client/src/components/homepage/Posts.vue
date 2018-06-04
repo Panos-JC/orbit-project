@@ -1,7 +1,7 @@
 <template>
 <v-layout column>
-  <v-flex xs12 v-for="postData in posts" :key="postData.post.properties.id">
-    <post :postData="postData"></post>
+  <v-flex xs12 v-for="postData in posts" :key="postData.id">
+    <post :postData="postData.post"></post>
   </v-flex>
 </v-layout>
 </template>
@@ -18,7 +18,6 @@ export default {
   },
   async created () {
     this.posts = (await PostService.getPosts(this.$store.state.user.properties.username)).data
-    console.log(this.posts)
   },
   components: {
     Post

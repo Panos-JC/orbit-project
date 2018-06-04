@@ -190,6 +190,22 @@ User.getLikedPosts = (username, callback) => {
   })
 }
 
+// Get a user's reposts
+User.getReposts = (username, callback) => {
+  const qp = {
+    query: [
+      'MATCH (user:User {username: {username}})-[:REPOSTED]->(post:Post)',
+      'RETURN post'
+    ].join('\n'),
+    params: { username }
+  }
+
+  db.cypher(qp, (err, posts) => {
+    if (err) callback(err)
+    callback(null, posts)
+  })
+}
+
 // Passport Functions
 
 User.generateHash = (password, next) => {
