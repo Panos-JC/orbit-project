@@ -1,14 +1,14 @@
 <template>
-  <div class="userInfo">
-    <h1 class="userInfo-name text-xs-left">{{userData.fname}} {{userData.lname}}</h1>
-    <h2 class="userInfo-username text-xs-left">@{{userData.username}}</h2>
+  <div class="userInfo" v-if="userInfo">
+    <h1 class="userInfo-name text-xs-left">{{userInfo.fname}} {{userInfo.lname}}</h1>
+    <h2 class="userInfo-username text-xs-left">@{{userInfo.username}}</h2>
   </div>
 </template>
 
 <script>
 export default {
   props: [
-    'userData'
+    'userInfo'
   ]
 }
 </script>

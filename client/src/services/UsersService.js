@@ -10,6 +10,10 @@ export default {
     return Api().get(`users/${username}`, username)
   },
 
+  userInfo (username) {
+    return Api().get(`users/${username}/userInfo`, username)
+  },
+
   // Get followers
   followers (username) {
     return Api().get(`users/${username}/followers`, username)

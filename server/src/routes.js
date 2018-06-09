@@ -46,6 +46,9 @@ module.exports = (app, passport) => {
   app.get('/users/:username',
     UserController.show)
 
+  app.get('/users/:username/userInfo',
+    UserController.userInfo)
+
   app.get('/users/:username/followers',
     UserController.followers)
 
@@ -70,6 +73,9 @@ module.exports = (app, passport) => {
   // Post Routes
   app.post('/post/create',
     PostController.create)
+
+  app.get('/post/:id',
+    PostController.getPost)
 
   app.get('/posts/:username',
     PostController.index)

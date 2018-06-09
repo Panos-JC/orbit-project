@@ -13,22 +13,26 @@ module.exports = {
 
   // Get user info, stats and posts
   async show (req, res, next) {
-    await User.getBy('user.username', req.params.username, (err, user) => {
+    User.getUserInfo(req.params.username, (err, userInfo) => {
       if (err) return next(err)
 
-      User.getStats(req.params.username, (err, stats) => {
+      Post.getUserPosts(req.params.username, (err, posts) => {
         if (err) return next(err)
 
-        Post.getUserPosts(req.params.username, (err, posts) => {
-          if (err) return next(err)
-
-          res.send({
-            user,
-            stats,
-            posts: posts
-          })
+        res.send({
+          userInfo: userInfo.userInfo,
+          posts: posts
         })
       })
+    })
+  },
+
+  // Get user info
+  async userInfo (req, res, next) {
+    User.getUserInfo(req.params.username, (err, userInfo) => {
+      if (err) return next(err)
+
+      res.send({userInfo: userInfo.userInfo})
     })
   },
 

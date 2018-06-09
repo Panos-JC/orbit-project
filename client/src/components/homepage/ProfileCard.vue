@@ -9,10 +9,10 @@
   <v-card-title class="card-title">
     <div class="card-container">
       <v-avatar class="avatar" size="65">
-        <img :src="'https://api.adorable.io/avatars/285/' + $store.state.user.properties.username + '.png'" alt="">
+        <img :src="'https://api.adorable.io/avatars/285/' + userInfo.username + '.png'" alt="">
       </v-avatar>
-      <a href="" class="name text-xs-left">{{$store.state.user.properties.fname}} {{$store.state.user.properties.lname}}</a>
-      <a href="" class="username text-xs-left">@{{$store.state.user.properties.username}}</a>
+      <a :href="'#/users/' + userInfo.username" class="name text-xs-left">{{userInfo.fname}} {{userInfo.lname}}</a>
+      <a :href="'#/users/' + userInfo.username" class="username text-xs-left">@{{userInfo.username}}</a>
     </div>
   </v-card-title>
   <v-card-actions class="actions">
@@ -20,19 +20,19 @@
       <li class="stat">
         <a href="">
           <span class="stat-label">Posts</span>
-          <span class="stat-value">4</span>
+          <span class="stat-value">{{userInfo.posts}}</span>
         </a>
       </li>
       <li class="stat">
         <a href="">
           <span class="stat-label">Following</span>
-          <span class="stat-value">51</span>
+          <span class="stat-value">{{userInfo.following}}</span>
         </a>
       </li>
       <li class="stat">
         <a href="">
           <span class="stat-label">Followers</span>
-          <span class="stat-value">126</span>
+          <span class="stat-value">{{userInfo.followers}}</span>
         </a>
       </li>
     </ul>
@@ -41,7 +41,18 @@
 </template>
 
 <script>
+import UserService from '@/services/UsersService'
+
 export default {
+  data () {
+    return {
+      userInfo: {}
+    }
+  },
+  async created () {
+    this.userInfo = (await UserService.userInfo(this.$store.state.user.properties.username)).data.userInfo
+    console.log(this.userInfo)
+  }
 }
 </script>
 
@@ -60,7 +71,7 @@ export default {
     font-weight: bold;
     font-size: 18px;
     line-height: 25px;
-    max-width: 100%;
+    max-width: 60%;
     overflow: hidden!important;
     text-overflow: ellipsis!important;
     white-space: nowrap!important;

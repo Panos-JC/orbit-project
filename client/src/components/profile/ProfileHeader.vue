@@ -13,22 +13,22 @@
       <v-layout row style="height: 100%">
         <v-flex xs3>
           <v-avatar class="avatar" size="130">
-            <img :src="'https://api.adorable.io/avatars/285/' + username + '.png'" alt="">
+            <img :src="'https://api.adorable.io/avatars/285/' + userInfo.username + '.png'" alt="">
         </v-avatar>
         </v-flex>
         <v-flex xs6 style="height: 100%">
           <v-toolbar-items class="hidden-sm-and-down">
-            <v-btn flat class="stat" :to="'/users/' + username">
+            <v-btn flat class="stat" :to="'/users/' + userInfo.username">
               <span class="label">Posts</span>
-              <span class="value">{{userStats.posts}}</span>
+              <span class="value">{{userInfo.posts}}</span>
             </v-btn>
-            <v-btn flat class="stat" :to="'/users/' + username + '/followers'">
+            <v-btn flat class="stat" :to="'/users/' + userInfo.username + '/followers'">
               <span class="label">Followers</span>
-              <span class="value">{{userStats.followers}}</span>
+              <span class="value">{{userInfo.followers}}</span>
             </v-btn>
-            <v-btn flat class="stat" :to="'/users/' + username + '/following'">
+            <v-btn flat class="stat" :to="'/users/' + userInfo.username + '/following'">
               <span class="label">Following</span>
-              <span class="value">{{userStats.following}}</span>
+              <span class="value">{{userInfo.following}}</span>
             </v-btn>
           </v-toolbar-items>
         </v-flex>
@@ -69,12 +69,15 @@ export default {
     },
     // If this user is logged in return true
     isLoggedIn () {
-      return this.$store.state.user.properties.username === this.username
+      if (this.$store.state.isUserLoggedIn) {
+        return this.$store.state.user.properties.username === this.username
+      } else {
+        return false
+      }
     }
   },
   props: [
-    'userStats',
-    'username'
+    'userInfo'
   ]
 }
 </script>

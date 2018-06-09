@@ -1,15 +1,17 @@
 <template>
 <div>
-  <profile-header v-if="dataLoaded" :userStats="userStats" :username="user.properties.username"></profile-header>
+  <profile-header v-if="dataLoaded" :userInfo="userInfo"></profile-header>
   <v-container grid-list-md v-if="dataLoaded">
     <v-layout>
       <v-flex xs3>
-        <user-info v-if="dataLoaded" :userData="user.properties"></user-info>
+        <user-info v-if="dataLoaded" :userInfo="userInfo"></user-info>
       </v-flex>
       <v-flex xs6>
         <v-layout column>
           <v-flex xs12 v-for="postData in userPosts" :key="postData.post.id">
-            <post :postData="postData.post"></post>
+            <v-card>
+              <post :postData="postData.post"></post>
+            </v-card>
           </v-flex>
         </v-layout>
       </v-flex>
@@ -28,8 +30,7 @@ import Post from '@/components/Post'
 export default {
   data () {
     return {
-      user: {},
-      userStats: {},
+      userInfo: {},
       userPosts: [],
       dataLoaded: false
     }
@@ -37,8 +38,7 @@ export default {
   async created () {
     const username = this.$store.state.route.params.username
     const data = (await UsersService.show(username)).data
-    this.user = data.user
-    this.userStats = data.stats
+    this.userInfo = data.userInfo
     this.userPosts = data.posts
     this.dataLoaded = true
   },
