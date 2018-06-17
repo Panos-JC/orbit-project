@@ -21,6 +21,69 @@ Post.getAll = (callback) => {
   })
 }
 
+// Get post info by id
+Post.getPost = (id, callback) => {
+  const qp = {
+    query: [
+      'MATCH (post:Post {id: {postId}})<-[r:POSTED|LIKED|REPOSTED]-(u)',
+      'RETURN post, type(r) AS type, COUNT(u) AS counters, collect(u) AS users'
+    ].join('\n'),
+    params: {
+      postId: parseInt(id)
+    }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) return callback(err)
+    callback(null, result)
+  })
+}
+
+// Get post replies
+Post.getReplies = (postId, callback) => {
+  const qp = {
+    query: [
+      'MATCH (post:Post {id: {postId}})<-[r:REPLIED_TO]-(reply:Post)<-[:POSTED]-(user:User)',
+      'OPTIONAL MATCH (reply)<-[l:LIKED]-()',
+      'WITH user, reply, COUNT(l) AS likes, r',
+      'OPTIONAL MATCH (reply)<-[rep:REPOSTED]-()',
+      'RETURN user, reply, likes, COUNT(rep) AS reposts, r',
+      'ORDER BY r.timestamp'
+    ].join('\n'),
+    params: { postId: parseInt(postId) }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) return callback(err)
+    callback(null, result)
+  })
+}
+
+// Create reply
+Post.createReply = (username, postId, reply, callback) => {
+  const qp = {
+    query: [
+      'MERGE (id:UniqueId {name: "Post"})',
+      'ON CREATE SET id.count = 1',
+      'ON MATCH SET id.count = id.count + 1',
+      'WITH id.count AS uid',
+      'MATCH (user:User {username: {username}}), (post:Post {id: {postId}})',
+      'CREATE (user)-[:POSTED {timestamp: timestamp()}]->(reply:Post {id: uid, content: {reply}})-[:REPLIED_TO {timestamp: timestamp()}]->(post)',
+      'RETURN user, reply, post'
+    ].join('\n'),
+    params: {
+      username,
+      postId: parseInt(postId),
+      reply
+    }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) return callback(err)
+    callback(null, result)
+  })
+}
+
 // Get posts of friends
 Post.getPosts = (username, callback) => {
   const qp = {
@@ -30,11 +93,14 @@ Post.getPosts = (username, callback) => {
       'OPTIONAL MATCH (post)<-[:REPOSTED]-(reposter:User)',
       'WITH followee, post, poster, COUNT(reposter) AS reposts, p',
       'OPTIONAL MATCH (post)<-[:LIKED]-(liker:User)',
+      'WITH followee, post, poster, reposts, COUNT(liker) AS likes, p',
+      'OPTIONAL MATCH (post)-[:REPLIED_TO]->(n)<-[:POSTED]-(u)',
       'WITH {id: post.id, content: post.content,',
       '      poster: {username: poster.username, fname: poster.fname, lname: poster.lname},',
       '        reposter: CASE WHEN type(p) = "POSTED" THEN NULL ELSE followee.username END,',
       '        reposts: reposts,',
-      '        likes: COUNT(liker)',
+      '        likes: likes,',
+      '        repliedTo: CASE WHEN COUNT(n) > 0 THEN u.username ELSE NULL END',
       '      } AS post, p',
       'RETURN post',
       'ORDER BY p.timestamp DESC'
@@ -57,12 +123,15 @@ Post.getUserPosts = (username, callback) => {
       'OPTIONAL MATCH (post)<-[:REPOSTED]-(reposter:User)',
       'WITH user, post, poster, COUNT(reposter) AS reposts, p',
       'OPTIONAL MATCH (post)<-[:LIKED]-(liker:User)',
+      'WITH user, post, poster, reposts, COUNT(liker) AS likes, p',
+      'OPTIONAL MATCH (post)-[:REPLIED_TO]->(n)<-[:POSTED]-(u)',
       'WITH {id: post.id,',
       '    content: post.content,',
       '        poster: {username: poster.username, fname: poster.fname, lname: poster.lname},',
       '        reposter: CASE WHEN type(p) = "REPOSTED" THEN user.username ELSE NULL END,',
       '        reposts: reposts,',
-      '        likes: COUNT(liker)',
+      '        likes: likes,',
+      '        repliedTo: CASE WHEN COUNT(n) > 0 THEN u.username ELSE NULL END',
       '      } AS post, p',
       'RETURN post',
       'ORDER BY p.timestamp DESC'

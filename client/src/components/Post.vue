@@ -1,76 +1,77 @@
 <template>
-  <v-card v-if="postData">
-    <v-container class="pb-1">
-      <v-layout wrap>
-        <v-flex xs12 v-if="postData.reposter">
-          <div class="postContext">
-            <span class="repostIcon">
-              <v-icon>repeat</v-icon>
+  <v-container class="pb-1">
+    <v-layout wrap>
+      <v-flex xs12 v-if="postData.reposter">
+        <div class="postContext">
+          <span class="repostIcon">
+            <v-icon>repeat</v-icon>
+          </span>
+          <span class="repostText">
+            <a href="">{{reposter}}</a>
+            Reposted
+          </span>
+        </div>
+      </v-flex>
+      <v-flex xs1>
+        <a :href="'#/users/' + postData.poster.username">
+          <v-avatar>
+            <img :src="'https://api.adorable.io/avatars/285/' + postData.poster.username + '.png'" alt="avatar">
+          </v-avatar>
+        </a>
+      </v-flex>
+      <v-flex xs11 class="pb-0">
+        <div class="post-header ml-3">
+          <a :href="'#/users/' + postData.poster.username" class="post-header-link text-xs-left">
+            <span class="fullNameGroup text-xs-left">
+            <strong class="fullName text-xs-left">
+              {{fullName}}
+            </strong>
             </span>
-            <span class="repostText">
-              <a href="">{{reposter}}</a>
-              Reposted
-            </span>
-          </div>
-        </v-flex>
-        <v-flex xs1>
-          <a :href="'#/users/' + postData.poster.username">
-            <v-avatar>
-              <img :src="'https://api.adorable.io/avatars/285/' + postData.poster.username + '.png'" alt="avatar">
-            </v-avatar>
+            <span class="username">@{{postData.poster.username}}</span>
+            <small class="date">15h</small>
           </a>
-        </v-flex>
-        <v-flex xs11 class="pb-0">
-          <div class="post-header ml-3">
-            <a :href="'#/users/' + postData.poster.username" class="post-header-link text-xs-left">
-              <span class="fullNameGroup text-xs-left">
-              <strong class="fullName text-xs-left">
-                {{fullName}}
-              </strong>
-              </span>
-              <span class="username">@{{postData.poster.username}}</span>
-              <small class="date">15h</small>
-            </a>
-          </div>
-          <div class="post-container ml-3">
-            <p class="postText text-xs-left mb-1">
-              {{postData.content}}
-            </p>
-          </div>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn icon :to="'/post/' + postData.id">
-              <v-icon>reply</v-icon>
-            </v-btn>
-            <button v-if="!liked" class="postActionButton" @click="like">
-              <div class="iconContainer">
-                <v-icon>favorite_border</v-icon>
-              </div>
-              <span class="actionCount">{{likeCounter}}</span>
-            </button>
-            <button v-if="liked" class="postActionButton postActionButton-active" @click="unlike">
-              <div class="iconContainer">
-                <v-icon>favorite</v-icon>
-              </div>
-              <span class="actionCount">{{likeCounter}}</span>
-            </button>
+        </div>
+        <div class="replyContext text-xs-left" v-if="postData.repliedTo">
+          Replying to <a :href="'#/users/' + postData.repliedTo">@{{postData.repliedTo}}</a>
+        </div>
+        <div class="post-container ml-3">
+          <p class="postText text-xs-left mb-1">
+            {{postData.content}}
+          </p>
+        </div>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn icon :to="'/post/' + postData.id">
+            <v-icon>reply</v-icon>
+          </v-btn>
+          <button v-if="!liked" class="postActionButton" @click="like">
+            <div class="iconContainer">
+              <v-icon>favorite_border</v-icon>
+            </div>
+            <span class="actionCount">{{likeCounter}}</span>
+          </button>
+          <button v-if="liked" class="postActionButton postActionButton-active" @click="unlike">
+            <div class="iconContainer">
+              <v-icon>favorite</v-icon>
+            </div>
+            <span class="actionCount">{{likeCounter}}</span>
+          </button>
 
-            <button v-if="!reposted" class="postActionButton" @click="repost">
-              <div class="iconContainer iconRepost">
-                <v-icon>repeat</v-icon>
-              </div>
-              <span class="actionCount actionCount-repost">{{repostCounter}}</span>
-            </button>
-            <button v-if="reposted" class="postActionButton postActionButton-active-repost" @click="removeRepost">
-              <div class="iconContainer iconRepost">
-                <v-icon>repeat</v-icon>
-              </div>
-              <span class="actionCount actionCount-repost">{{repostCounter}}</span>
-            </button>
-          </v-card-actions>
-        </v-flex>
-      </v-layout>
-    </v-container>
+          <button v-if="!reposted" class="postActionButton" @click="repost">
+            <div class="iconContainer iconRepost">
+              <v-icon>repeat</v-icon>
+            </div>
+            <span class="actionCount actionCount-repost">{{repostCounter}}</span>
+          </button>
+          <button v-if="reposted" class="postActionButton postActionButton-active-repost" @click="removeRepost">
+            <div class="iconContainer iconRepost">
+              <v-icon>repeat</v-icon>
+            </div>
+            <span class="actionCount actionCount-repost">{{repostCounter}}</span>
+          </button>
+        </v-card-actions>
+      </v-flex>
+    </v-layout>
     <v-snackbar
       bottom
       left
@@ -91,11 +92,10 @@
       {{ message }}
       <v-btn flat @click.native="errorSnackbar = false">Close</v-btn>
     </v-snackbar>
-  </v-card>
+  </v-container>
 </template>
 
 <script>
-import ExtendedPost from '@/components/ExtendedPost'
 import PostService from '@/services/PostService'
 
 export default {
@@ -229,9 +229,6 @@ export default {
     this.likeCounter = this.postData.likes
     this.repostCounter = this.postData.reposts
   },
-  components: {
-    ExtendedPost
-  },
   props: [
     'postData'
   ]
@@ -247,6 +244,22 @@ export default {
 .post-header:hover .fullName{
   text-decoration: underline;
   color: #3f51b5
+}
+
+.replyContext {
+  color: #657786;
+  font-size: 14px;
+  line-height: 20px;
+  margin-left: 16px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  a {
+    color: #1c94e0;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 .fullNameGroup {

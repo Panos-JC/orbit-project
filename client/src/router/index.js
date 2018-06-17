@@ -8,6 +8,7 @@ import Profile from '@/components/profile/Profile'
 import Following from '@/components/profile/Following'
 import Followers from '@/components/profile/Followers'
 import Browse from '@/components/browse/Browse'
+import ExtendedPost from '@/components/extendedPost/ExtendedPost'
 
 Vue.use(Router)
 
@@ -51,6 +52,11 @@ export default new Router({
       path: '/users/:username/followers',
       name: 'followers',
       component: Followers
+    },
+    {
+      path: '/post/:id',
+      name: 'post',
+      component: ExtendedPost
     },
     {
       path: '/browse',

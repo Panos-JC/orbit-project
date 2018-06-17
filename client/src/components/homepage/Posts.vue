@@ -1,7 +1,9 @@
 <template>
 <v-layout column>
   <v-flex xs12 v-for="postData in posts" :key="postData.id">
-    <post :postData="postData.post"></post>
+    <v-card>
+      <post :postData="postData.post"></post>
+    </v-card>
   </v-flex>
 </v-layout>
 </template>

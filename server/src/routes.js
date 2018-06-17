@@ -74,8 +74,14 @@ module.exports = (app, passport) => {
   app.post('/post/create',
     PostController.create)
 
+  app.post('/post/reply',
+    PostController.createReply)
+
   app.get('/post/:id',
     PostController.getPost)
+
+  app.get('/post/:id/replies',
+    PostController.getReplies)
 
   app.get('/posts/:username',
     PostController.index)
