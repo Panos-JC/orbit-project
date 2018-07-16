@@ -145,21 +145,33 @@ Post.getUserPosts = (username, callback) => {
   })
 }
 
-// Create post with a unique id
-Post.createPost = (username, content, callback) => {
+// Create post with a unique id, tags and mentions
+Post.createPost = (username, content, tags, mentions, callback) => {
   const qp = {
     query: [
       'MERGE (id:UniqueId {name: "Post"})',
       'ON CREATE SET id.count = 1',
       'ON MATCH SET id.count = id.count + 1',
       'WITH id.count AS uid',
-      'MATCH (user:User {username: {username}})',
-      'CREATE (user)-[r:POSTED {timestamp: timestamp()}]->(post:Post {id:uid, content: {content}, timestamp: timestamp()})',
-      'RETURN user, post'
+      'MATCH (poster:User {username: {username}})',
+      'CREATE (poster)-[:POSTED {timestamp: timestamp()}]->(post:Post {id: uid, content: {content}})',
+      'WITH post, poster',
+      'OPTIONAL MATCH (user:User)',
+      'WHERE user.username IN {mentions}',
+      'FOREACH (a IN CASE WHEN user IS NULL THEN [] ELSE [user] END | CREATE (post)-[r:MENTIONS]->(user))',
+      'WITH collect(user) AS mentions, post, poster',
+      'UNWIND {tags} AS tags',
+      'FOREACH (b IN CASE WHEN tags IS NULL THEN [] ELSE [tags] END |',
+      '            MERGE (tag:Tag {name: tags})',
+      '            CREATE (post)-[:HAS]->(tag)',
+      '        )',
+      'RETURN mentions, post, poster'
     ].join('\n'),
     params: {
       username,
-      content
+      content,
+      tags,
+      mentions
     }
   }
 

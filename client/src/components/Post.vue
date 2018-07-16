@@ -36,7 +36,7 @@
         </div>
         <div class="post-container ml-3">
           <p class="postText text-xs-left mb-1">
-            {{postData.content}}
+            <post-content :paragraph="postData.content"></post-content>
           </p>
         </div>
         <v-card-actions>
@@ -97,6 +97,7 @@
 
 <script>
 import PostService from '@/services/PostService'
+import PostContent from '@/components/PostContent'
 
 export default {
   data () {
@@ -231,7 +232,10 @@ export default {
   },
   props: [
     'postData'
-  ]
+  ],
+  components: {
+    PostContent
+  }
 }
 </script>
 

@@ -57,4 +57,8 @@ export default {
   text-align: center;
   color: #2c3e50;
 }
+
+.dialog {
+  overflow-y: initial!important;
+}
 </style>
