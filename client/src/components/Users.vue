@@ -84,6 +84,7 @@ export default {
         }
         found = false
       }
+      console.log(this.users)
     }
   },
   components: {

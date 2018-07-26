@@ -19,19 +19,6 @@
             <div contenteditable data-text="Post your reply..." class="editor"></div>
           </at>
         </template>
-        <!-- <v-text-field
-          :rules="[(v) => v.length <= 140 || 'Max 140 characters']"
-          :counter = "140"
-          v-model="post"
-          class="text"
-          name="input-1"
-          label="What's happening?"
-          multi-line
-          no-resize
-          solo
-          flat
-          light
-        ></v-text-field> -->
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
