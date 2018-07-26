@@ -30,7 +30,7 @@
 
 <script>
 import PlacesService from '@/services/PlacesService'
-import PlaceCard from '@/components/browse/PlaceCard'
+import PlaceCard from '@/components/places/PlaceCard'
 
 export default {
   data () {

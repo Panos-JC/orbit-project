@@ -1,14 +1,16 @@
 <template>
   <v-card>
-    <v-card-media :src="'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=' + place.photos[0].photo_reference + '&key=AIzaSyBBbWdvzj7X7wbMFQWQnXA_lWaXFVIwykc'" height="200px">
-      <v-container fluid fill-height>
-        <v-layout fill-height>
-          <v-flex xs12 flexbox>
-            <span class="headline white--text title">{{place.name}}</span>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-card-media>
+    <a :href="'#/places/' + place.place_id">
+      <v-card-media :src="'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=' + place.photos[0].photo_reference + '&key=AIzaSyBBbWdvzj7X7wbMFQWQnXA_lWaXFVIwykc'" height="200px">
+        <v-container fluid fill-height>
+          <v-layout fill-height>
+            <v-flex xs12 flexbox>
+              <span class="headline white--text title">{{place.name}}</span>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-card-media>
+    </a>
     <v-card-actions>
       <v-btn flat v-if="!visited" @click="visited=true">
         <v-icon>bookmark_border</v-icon>

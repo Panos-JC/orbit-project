@@ -7,8 +7,10 @@ import Users from '@/components/Users'
 import Profile from '@/components/profile/Profile'
 import Following from '@/components/profile/Following'
 import Followers from '@/components/profile/Followers'
-import Browse from '@/components/browse/Browse'
+import Places from '@/components/places/Places'
+import Place from '@/components/places/Place'
 import ExtendedPost from '@/components/extendedPost/ExtendedPost'
+import Test from '@/components/test'
 
 Vue.use(Router)
 
@@ -17,6 +19,11 @@ export default new Router({
     {
       path: '/',
       name: 'root'
+    },
+    {
+      path: '/test',
+      name: 'test',
+      component: Test
     },
     {
       path: '/home',
@@ -59,9 +66,14 @@ export default new Router({
       component: ExtendedPost
     },
     {
-      path: '/browse',
-      name: 'browse',
-      component: Browse
+      path: '/places',
+      name: 'places',
+      component: Places
+    },
+    {
+      path: '/places/:placeId',
+      name: 'place',
+      component: Place
     }
   ]
 })

@@ -67,8 +67,12 @@ module.exports = (app, passport) => {
   app.post('/unfollow',
     UserController.unFollow)
 
+  // Places Routes
   app.post('/places/search',
     PlacesApiController.search)
+
+  app.get('/places/:placeId',
+    PlacesApiController.getPlace)
 
   // Post Routes
   app.post('/post/create',
