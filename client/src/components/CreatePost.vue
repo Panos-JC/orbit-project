@@ -8,17 +8,7 @@
         <span class="headline">Create Post</span>
       </v-card-title>
       <v-card-text>
-        <template>
-          <at :members="members" v-model="post" name-key="username">
-            <template class="temp" slot="item" slot-scope="s">
-              <v-avatar class="avatar mr-2" size="25px">
-                <img :src="'https://api.adorable.io/avatars/285/'+ s.item.username +'.png'" alt="avatar">
-              </v-avatar>
-              <span v-text="s.item.username"></span>
-            </template>
-            <div contenteditable data-text="Post your reply..." class="editor"></div>
-          </at>
-        </template>
+        <create-post-input @postChange="updatePost"></create-post-input>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -31,7 +21,7 @@
 
 <script>
 import PostService from '@/services/PostService'
-import At from 'vue-at'
+import CreatePostInput from '@/components/CreatePostInput'
 
 export default {
   data () {
@@ -42,6 +32,10 @@ export default {
     }
   },
   methods: {
+    updatePost (newText) {
+      this.post = newText
+      console.log(this.post)
+    },
     // Get tags from post
     getTags () {
       return this.post.match(/(#)\w+/g)
@@ -91,32 +85,10 @@ export default {
     }
   },
   components: {
-    At
+    CreatePostInput
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.v-dialog {
-  background: red!important;
-}
-.editor {
-  color: black;
-  overflow: auto;
-  background: white;
-  width: 100%;
-  height: 140px;
-  padding: 8px 16px;
-  font-size: 16px;
-  resize: none;
-  text-align: left;
-  &:focus {
-    outline: none;
-  }
-}
-
-[contenteditable=true]:empty:not(:focus):before {
-  content:attr(data-text);
-  color: gray;
-}
 </style>
