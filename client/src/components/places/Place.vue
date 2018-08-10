@@ -14,7 +14,7 @@
       </v-layout>
     </v-container>
   </v-jumbotron>
-  <place-info></place-info>
+  <place-info :rated="rated" :rating="rating"></place-info>
   <v-container grid-list-md>
     <v-layout>
       <v-flex xs6 offset-xs3>
@@ -28,9 +28,9 @@
           :visited="visited"
           :rated="rated"
           :interested="interested"
-          @showRate="rateDialog = true"
-          @showVisit="visitDialog = true"
-          @showInterest="showInterestDialog"
+          @showRate="showActionDialog('rate')"
+          @showVisit="showActionDialog('visit')"
+          @showInterest="showActionDialog('interest')"
         ></action-card>
       </v-flex>
     </v-layout>
@@ -39,7 +39,7 @@
     <v-card class="rateCard">
       <heart-rating
         :spacing="3"
-        :increment="0.5"
+        :increment="1"
         :fixed-points="2"
         :item-size="27"
         :active-color="'#F44336'"
@@ -105,10 +105,13 @@
     {{message}}
     <v-btn flat @click.native="rated = false">Close</v-btn>
   </v-snackbar>
+  <loading
+    :show="showLoader"></loading>
 </div>
 </template>
 
 <script>
+import Loading from 'vue-full-loading'
 import PlacesService from '@/services/PlacesService'
 import PlaceInfo from '@/components/places/PlaceInfo'
 import PlaceContent from '@/components/places/PlaceContent'
@@ -121,6 +124,9 @@ export default {
       placeDetails: null,
       fab: false,
       heart: '',
+
+      // loader
+      showLoader: false,
 
       // Dialogs
       rateDialog: false,
@@ -136,6 +142,7 @@ export default {
       visited: false,
       rated: false,
       interested: false,
+      rating: null,
 
       // Interested input
       postText: ''
@@ -143,6 +150,22 @@ export default {
   },
   created () {
     this.getPlaceDetails()
+      .then(() => {
+        if (this.$store.state.visits.includes(this.placeDetails.place_id)) {
+          this.visited = true
+        }
+
+        if (this.$store.state.interests.includes(this.placeDetails.place_id)) {
+          this.interested = true
+        }
+
+        this.$store.state.ratings.forEach((rating) => {
+          if (rating.place === this.placeDetails.place_id) {
+            this.rated = true
+            this.rating = rating.rating
+          }
+        })
+      })
   },
   methods: {
     async getPlaceDetails () {
@@ -152,9 +175,16 @@ export default {
         console.log(error)
       }
     },
+
     async rate (rating) {
       try {
-        // DO RATE
+        const response = (await PlacesService.rate(
+          this.placeDetails.place_id,
+          this.$store.state.user.properties.username,
+          rating
+        ))
+
+        console.log(response)
 
         this.snackbar = true
         this.rated = true
@@ -167,9 +197,15 @@ export default {
         this.message = 'Something went wrong'
       }
     },
+
     async visit () {
       try {
-        // DO VISIT
+        const response = (await PlacesService.visit(
+          this.placeDetails.place_id,
+          this.$store.state.user.properties.username
+        ))
+
+        console.log(response)
 
         this.snackbar = true
         this.visited = true
@@ -182,37 +218,16 @@ export default {
         this.message = 'Something went wrong'
       }
     },
-    async showInterestDialog () {
-      this.interestDialog = true
-      this.postText = `I'm interested in visiting ${this.placeDetails.name}, any thoughts?`
 
-      let locality = ''
-      let country = ''
-
-      if (this.placeDetails.types.includes('country')) {
-        console.log(this.placeDetails.name)
-      } else if (this.placeDetails.types.includes('locality')) {
-        for (let i = 0; i < this.placeDetails.address_components.length; i++) {
-          if (this.placeDetails.address_components[i].types.includes('country')) {
-            country = this.placeDetails.address_components[i].long_name
-          }
-        }
-        console.log(`${this.placeDetails.name}-->${country}`)
-      } else {
-        for (let i = 0; i < this.placeDetails.address_components.length; i++) {
-          if (this.placeDetails.address_components[i].types.includes('locality')) {
-            locality = this.placeDetails.address_components[i].long_name
-          }
-          if (this.placeDetails.address_components[i].types.includes('country')) {
-            country = this.placeDetails.address_components[i].long_name
-          }
-        }
-        console.log(`${this.placeDetails.name}-->${locality}-->${country}`)
-      }
-    },
     async postInterest () {
       try {
-        // DO POST
+        const response = (await PlacesService.interest(
+          this.placeDetails.place_id,
+          this.$store.state.user.properties.username,
+          this.postText
+        ))
+
+        console.log(response)
 
         this.snackbar = true
         this.interested = true
@@ -224,13 +239,169 @@ export default {
         this.color = 'error'
         this.message = 'Something went wrong'
       }
+    },
+
+    async showActionDialog (action) {
+      this.showLoader = true
+      switch (action) {
+        case 'interest':
+          try {
+            this.mergePlace()
+              .then(() => {
+                setTimeout(() => {
+                  this.showLoader = false
+                  this.interestDialog = true
+                  this.postText = `I'm interested in visiting ${this.placeDetails.name}, any thoughts?`
+                }, 1000)
+              })
+          } catch (error) {
+            this.showLoader = false
+            this.color = 'error'
+            this.message = 'Something went wrong'
+          }
+          break
+
+        case 'rate':
+          try {
+            this.mergePlace()
+              .then(() => {
+                setTimeout(() => {
+                  this.showLoader = false
+                  this.rateDialog = true
+                }, 1000)
+              })
+          } catch (error) {
+            this.showLoader = false
+            this.color = 'error'
+            this.message = 'Something went wrong'
+          }
+          break
+
+        case 'visit':
+          try {
+            this.mergePlace()
+              .then(() => {
+                setTimeout(() => {
+                  this.visitDialog = true
+                  this.showLoader = false
+                }, 1000)
+              })
+          } catch (error) {
+            this.showLoader = false
+            this.color = 'error'
+            this.message = 'Something went wrong'
+          }
+          break
+      }
+    },
+
+    async getPlaceLocations () {
+      let locality = ''
+      let country = ''
+
+      if (this.placeDetails.types.includes('country')) {
+        return {
+          data: {
+            name: this.placeDetails.name,
+            place_id: this.placeDetails.place_id,
+            type: 'country'
+          },
+          type: 'country'
+        }
+      } else if (this.placeDetails.types.includes('locality') || this.placeDetails.types.includes('natural_feature')) {
+        for (let i = 0; i < this.placeDetails.address_components.length; i++) {
+          if (this.placeDetails.address_components[i].types.includes('country')) {
+            country = this.placeDetails.address_components[i].long_name
+            let c = (await PlacesService.getPlaceByName(country)).data.candidates
+
+            return {
+              data: {
+                locality: {
+                  name: this.placeDetails.name,
+                  place_id: this.placeDetails.place_id,
+                  type: 'locality'
+                },
+                country: {
+                  name: c[0].name,
+                  place_id: c[0].place_id,
+                  type: 'country'
+                }
+              },
+              type: 'locality'
+            }
+          }
+        }
+      } else {
+        let localityDetails = ''
+        let countryDetails = ''
+
+        for (let i = 0; i < this.placeDetails.address_components.length; i++) {
+          if (this.placeDetails.address_components[i].types.includes('locality')) {
+            locality = this.placeDetails.address_components[i].long_name
+            localityDetails = (await PlacesService.getPlaceByName(locality)).data.candidates
+          }
+          if (this.placeDetails.address_components[i].types.includes('country')) {
+            country = this.placeDetails.address_components[i].long_name
+            countryDetails = (await PlacesService.getPlaceByName(country)).data.candidates
+          }
+        }
+
+        return {
+          data: {
+            place: {
+              name: this.placeDetails.name,
+              place_id: this.placeDetails.place_id,
+              type: this.placeDetails.types[0]
+            },
+            locality: {
+              name: localityDetails[0].name,
+              place_id: localityDetails[0].place_id,
+              type: 'locality'
+            },
+            country: {
+              name: countryDetails[0].name,
+              place_id: countryDetails[0].place_id,
+              type: 'country'
+            }
+          },
+          type: 'place'
+        }
+      }
+    },
+
+    // Create place if not exist
+    async mergePlace () {
+      this.getPlaceLocations()
+        .then(async placeDetails => {
+          let placeData = {
+            data: null
+          }
+          if (placeDetails.type === 'country') {
+            placeData.data = placeDetails.data
+            let response = (await PlacesService.createCountry(placeData))
+            console.log('This is a country')
+            console.log(placeData)
+            console.log(response)
+          } else if (placeDetails.type === 'locality') {
+            placeData.data = placeDetails.data
+            let response = (await PlacesService.createLocality(placeData))
+            console.log('This is a locality')
+            console.log(placeData)
+            console.log(response)
+          } else {
+            placeData.data = placeDetails.data
+            console.log('This is a place')
+            console.log(placeData)
+          }
+        })
     }
   },
   components: {
     PlaceInfo,
     PlaceContent,
     ActionCard,
-    HeartRating
+    HeartRating,
+    Loading
   }
 }
 </script>

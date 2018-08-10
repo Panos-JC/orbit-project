@@ -94,5 +94,35 @@ module.exports = {
         res.send(posts)
       }
     })
+  },
+
+  async getVisits (req, res) {
+    User.getVisits(req.params.username, (err, result) => {
+      if (err) {
+        res.status(400).send(err)
+      } else {
+        res.send(result)
+      }
+    })
+  },
+
+  async getRatings (req, res) {
+    User.getRatings(req.params.username, (err, result) => {
+      if (err) {
+        res.status(400).send(err)
+      } else {
+        res.send(result)
+      }
+    })
+  },
+
+  async getInterests (req, res) {
+    User.getInterests(req.params.username, (err, result) => {
+      if (err) {
+        res.status(400).send(err)
+      } else {
+        res.send(result)
+      }
+    })
   }
 }

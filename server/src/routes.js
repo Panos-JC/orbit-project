@@ -1,6 +1,7 @@
 const UserController = require('./controllers/UserController')
 const PostController = require('./controllers/PostController')
 const PlacesApiController = require('./controllers/PlacesApiController')
+const PlaceController = require('./controllers/PlaceController')
 const jwt = require('jsonwebtoken')
 const config = require('./config/config')
 
@@ -67,12 +68,42 @@ module.exports = (app, passport) => {
   app.post('/unfollow',
     UserController.unFollow)
 
+  app.get('/users/:username/visits',
+    UserController.getVisits)
+
+  app.get('/users/:username/ratings',
+    UserController.getRatings)
+
+  app.get('/users/:username/interests',
+    UserController.getInterests)
+
   // Places Routes
   app.post('/places/search',
     PlacesApiController.search)
 
   app.get('/places/:placeId',
     PlacesApiController.getPlace)
+
+  app.get('/places/name/:placeName',
+    PlacesApiController.getPlaceByName)
+
+  app.post('/places/create/country',
+    PlaceController.createCountry)
+
+  app.post('/places/create/locality',
+    PlaceController.createLocality)
+
+  app.post('/places/create/place',
+    PlaceController.createPlace)
+
+  app.post('/places/visit',
+    PlaceController.visit)
+
+  app.post('/places/rate',
+    PlaceController.rate)
+
+  app.post('/places/interest',
+    PlaceController.interest)
 
   // Post Routes
   app.post('/post/create',

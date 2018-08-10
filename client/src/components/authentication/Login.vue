@@ -86,15 +86,29 @@ export default {
           repostsIdArray[i] = reposts[i].post.properties.id
         }
 
+        // get visits
+        const visits = (await UsersService.getVisits(this.username)).data[0].places
+
+        // get ratings
+        const ratings = (await UsersService.getRatings(this.username)).data
+
+        // get interests
+        const interests = (await UsersService.getInterests(this.username)).data[0].interests
+
         this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUser', response.data.user)
 
-        // pass only the usernames
+        // store only the usernames
         this.$store.dispatch('setFollowing', following)
 
-        // pass only the ids
+        // store only the ids
         this.$store.dispatch('setLikedPosts', likedPostsIdArray)
         this.$store.dispatch('setReposts', repostsIdArray)
+
+        // store user's visits, ratings and interests
+        this.$store.dispatch('setVisits', visits)
+        this.$store.dispatch('setRatings', ratings)
+        this.$store.dispatch('setInterests', interests)
 
         this.$router.push({
           name: 'profile',

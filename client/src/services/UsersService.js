@@ -42,5 +42,20 @@ export default {
   // Unfollow user
   unfollow (data) {
     return Api().post('unfollow', data)
+  },
+
+  // get user's visits
+  getVisits (username) {
+    return Api().get(`users/${username}/visits`, username)
+  },
+
+  // get user's ratings
+  getRatings (username) {
+    return Api().get(`users/${username}/ratings`, username)
+  },
+
+  // Get user's interests
+  getInterests (username) {
+    return Api().get(`users/${username}/interests`, username)
   }
 }

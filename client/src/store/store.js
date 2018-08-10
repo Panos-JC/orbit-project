@@ -11,6 +11,9 @@ export default new Vuex.Store({
     following: [],
     likedPosts: [],
     reposts: [],
+    visits: [],
+    ratings: [],
+    interests: [],
     isUserLoggedIn: false
   },
   mutations: {
@@ -75,6 +78,30 @@ export default new Vuex.Store({
       if (index > -1) {
         state.following.splice(index, 1)
       }
+    },
+
+    /**
+     * ====== Visits methods ======
+     */
+
+    setVisits (state, visits) {
+      state.visits = visits
+    },
+
+    /**
+     * ====== Ratings methods ======
+     */
+
+    setRatings (state, ratings) {
+      state.ratings = ratings
+    },
+
+    /**
+     * ====== Interests methods ======
+     */
+
+    setInterests (state, interests) {
+      state.interests = interests
     }
   },
   actions: {
@@ -92,6 +119,15 @@ export default new Vuex.Store({
     },
     setReposts ({commit}, reposts) {
       commit('setReposts', reposts)
+    },
+    setVisits ({commit}, visits) {
+      commit('setVisits', visits)
+    },
+    setRatings ({commit}, ratings) {
+      commit('setRatings', ratings)
+    },
+    setInterests ({commit}, interests) {
+      commit('setInterests', interests)
     }
   }
 })

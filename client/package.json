@@ -18,6 +18,7 @@
     "textarea-caret": "^3.1.0",
     "vue": "^2.5.2",
     "vue-at": "^2.4.0-beta",
+    "vue-full-loading": "^1.2.1",
     "vue-loading-spinner": "^1.0.11",
     "vue-rate-it": "^2.1.0",
     "vue-router": "^3.0.1",

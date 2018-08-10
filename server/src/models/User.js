@@ -211,6 +211,56 @@ User.getReposts = (username, callback) => {
   })
 }
 
+// Get a user's visited places
+User.getVisits = (username, callback) => {
+  const qp = {
+    query: [
+      'MATCH (user:User {username: {username}})',
+      'MATCH (user)-[r:VISITED]->(place)',
+      'RETURN collect(place.place_id) AS places'
+    ].join('\n'),
+    params: { username }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) callback(err)
+    callback(null, result)
+  })
+}
+
+// Get a user's rated places
+User.getRatings = (username, callback) => {
+  const qp = {
+    query: [
+      'MATCH (user:User {username: {username}})',
+      'MATCH (user)-[r:RATED]->(place)',
+      'RETURN place.place_id AS place, r.rating AS rating'
+    ].join('\n'),
+    params: { username }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) callback(err)
+    callback(null, result)
+  })
+}
+
+User.getInterests = (username, callback) => {
+  const qp = {
+    query: [
+      'MATCH (user:User {username: {username}})',
+      'MATCH (user)-[:POSTED]->(post)-[:INTERESTED_IN]->(place)',
+      'RETURN collect(place.place_id) AS interests'
+    ].join('\n'),
+    params: { username }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) callback(err)
+    callback(null, result)
+  })
+}
+
 // Passport Functions
 
 User.generateHash = (password, next) => {
