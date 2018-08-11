@@ -35,5 +35,9 @@ export default {
 
   interest (placeId, username, postContent) {
     return Api().post('/places/interest', {placeId, username, postContent})
+  },
+
+  getStats (placeId) {
+    return Api().get(`places/${placeId}/stats`, placeId)
   }
 }

@@ -148,3 +148,25 @@ Place.interest = (placeId, username, postContent, callback) => {
     callback(null, result)
   })
 }
+
+// Get place stats
+Place.getStats = (placeId, callback) => {
+  const qp = {
+    query: [
+      'MATCH (place:Place {place_id: {placeId}})',
+      'OPTIONAL MATCH (place)<-[r:RATED]-()',
+      'OPTIONAL MATCH (place)<-[i:INTERESTED_IN]-()',
+      'OPTIONAL MATCH (place)<-[v:VISITED]-()',
+      'RETURN count(DISTINCT i) AS interested,',
+      '       count(DISTINCT v) AS visited,',
+      '       count(DISTINCT r) AS rated,',
+      '       avg(r.rating) AS ratingAvg'
+    ].join('\n'),
+    params: { placeId }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) callback(err)
+    callback(null, result[0])
+  })
+}

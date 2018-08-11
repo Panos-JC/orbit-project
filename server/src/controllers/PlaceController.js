@@ -59,5 +59,15 @@ module.exports = {
         res.send(result)
       }
     })
+  },
+
+  async getStats (req, res) {
+    await Place.getStats(req.params.placeId, (err, result) => {
+      if (err) {
+        res.status(400).send(err)
+      } else {
+        res.send(result)
+      }
+    })
   }
 }

@@ -14,7 +14,7 @@
       </v-layout>
     </v-container>
   </v-jumbotron>
-  <place-info :rated="rated" :rating="rating"></place-info>
+  <place-info :rated="rated" :userRating="rating" :placeId="placeDetails.place_id"></place-info>
   <v-container grid-list-md>
     <v-layout>
       <v-flex xs6 offset-xs3>

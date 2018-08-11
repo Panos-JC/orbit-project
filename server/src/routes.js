@@ -84,6 +84,9 @@ module.exports = (app, passport) => {
   app.get('/places/:placeId',
     PlacesApiController.getPlace)
 
+  app.get('/places/:placeId/stats',
+    PlaceController.getStats)
+
   app.get('/places/name/:placeName',
     PlacesApiController.getPlaceByName)
 
