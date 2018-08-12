@@ -2,6 +2,7 @@ const UserController = require('./controllers/UserController')
 const PostController = require('./controllers/PostController')
 const PlacesApiController = require('./controllers/PlacesApiController')
 const PlaceController = require('./controllers/PlaceController')
+const TagController = require('./controllers/TagController')
 const jwt = require('jsonwebtoken')
 const config = require('./config/config')
 
@@ -135,4 +136,11 @@ module.exports = (app, passport) => {
 
   app.post('/post/removeRepost',
     PostController.removeRepost)
+
+  // TAG Routes
+  app.get('/tags/popular',
+    TagController.getPopularTags)
+
+  app.get('/tags/:tagName',
+    TagController.getTagged)
 }

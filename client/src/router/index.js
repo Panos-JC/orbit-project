@@ -10,6 +10,7 @@ import Followers from '@/components/profile/Followers'
 import Places from '@/components/places/Places'
 import Place from '@/components/places/Place'
 import ExtendedPost from '@/components/extendedPost/ExtendedPost'
+import Tags from '@/components/Tags'
 import Test from '@/components/test'
 
 Vue.use(Router)
@@ -74,6 +75,11 @@ export default new Router({
       path: '/places/:placeId',
       name: 'place',
       component: Place
+    },
+    {
+      path: '/tags/:name',
+      name: 'tags',
+      component: Tags
     }
   ]
 })
