@@ -88,22 +88,23 @@ Post.createReply = (username, postId, reply, callback) => {
 Post.getPosts = (username, callback) => {
   const qp = {
     query: [
-      'MATCH (user:User {username: {username}})-[:FOLLOWS]->(followee:User)-[p:POSTED|REPOSTED]->(post:Post)',
-      'MATCH (post)<-[:POSTED]-(poster:User)',
-      'OPTIONAL MATCH (post)<-[:REPOSTED]-(reposter:User)',
-      'WITH followee, post, poster, COUNT(reposter) AS reposts, p',
-      'OPTIONAL MATCH (post)<-[:LIKED]-(liker:User)',
-      'WITH followee, post, poster, reposts, COUNT(liker) AS likes, p',
-      'OPTIONAL MATCH (post)-[:REPLIED_TO]->(n)<-[:POSTED]-(u)',
-      'WITH {id: post.id, content: post.content,',
-      '      poster: {username: poster.username, fname: poster.fname, lname: poster.lname},',
-      '        reposter: CASE WHEN type(p) = "POSTED" THEN NULL ELSE followee.username END,',
-      '        reposts: reposts,',
-      '        likes: likes,',
-      '        repliedTo: CASE WHEN COUNT(n) > 0 THEN u.username ELSE NULL END',
-      '      } AS post, p',
-      'RETURN post',
-      'ORDER BY p.timestamp DESC'
+      'MATCH (user:User {username: {username}})-[:FOLLOWS]->(followee:User)-[r:POSTED|REPOSTED]->(post:Post)',
+      'WITH followee, r, post, CASE WHEN type(r) = "REPOSTED" THEN true ELSE false END AS isRepost',
+      'OPTIONAL MATCH (post)<-[:POSTED]-(u)',
+      'OPTIONAL MATCH (post)<-[l:LIKED]-()',
+      'OPTIONAL MATCH (post)<-[re:REPOSTED]-()',
+      'OPTIONAL MATCH (post)-[:REPLIED_TO]->(p)<-[:POSTED]-(u2)',
+      'RETURN post.id AS id,',
+      '       post.content AS content,',
+      '       u.username as username,',
+      '       u.fname AS fname,',
+      '       u.lname AS lname,',
+      '       CASE WHEN isRepost = true THEN followee.username ELSE null END AS reposter,',
+      '       u2.username AS reply,',
+      '       count(DISTINCT l) AS likes,',
+      '       count(DISTINCT re) AS reposts,',
+      '       r.timestamp AS timestamp',
+      'ORDER BY timestamp DESC'
     ].join('\n'),
     params: { username }
   }
@@ -118,23 +119,23 @@ Post.getPosts = (username, callback) => {
 Post.getUserPosts = (username, callback) => {
   const qp = {
     query: [
-      'MATCH (user:User {username: {username}})-[p:POSTED|REPOSTED]->(post:Post)',
-      'MATCH (post)<-[:POSTED]-(poster:User)',
-      'OPTIONAL MATCH (post)<-[:REPOSTED]-(reposter:User)',
-      'WITH user, post, poster, COUNT(reposter) AS reposts, p',
-      'OPTIONAL MATCH (post)<-[:LIKED]-(liker:User)',
-      'WITH user, post, poster, reposts, COUNT(liker) AS likes, p',
-      'OPTIONAL MATCH (post)-[:REPLIED_TO]->(n)<-[:POSTED]-(u)',
-      'WITH {id: post.id,',
-      '    content: post.content,',
-      '        poster: {username: poster.username, fname: poster.fname, lname: poster.lname},',
-      '        reposter: CASE WHEN type(p) = "REPOSTED" THEN user.username ELSE NULL END,',
-      '        reposts: reposts,',
-      '        likes: likes,',
-      '        repliedTo: CASE WHEN COUNT(n) > 0 THEN u.username ELSE NULL END',
-      '      } AS post, p',
-      'RETURN post',
-      'ORDER BY p.timestamp DESC'
+      'MATCH (user:User {username: {username}})-[r:POSTED|REPOSTED]->(post:Post)',
+      'WITH user, r, post, CASE WHEN type(r) = "REPOSTED" THEN true ELSE false END AS isRepost',
+      'OPTIONAL MATCH (post)<-[:POSTED]-(u)',
+      'OPTIONAL MATCH (post)<-[l:LIKED]-()',
+      'OPTIONAL MATCH (post)<-[re:REPOSTED]-()',
+      'OPTIONAL MATCH (post)-[:REPLIED_TO]->(p)<-[:POSTED]-(u2)',
+      'RETURN post.id AS id,',
+      '       post.content AS content,',
+      '       u.username as username,',
+      '       u.fname AS fname,',
+      '       u.lname AS lname,',
+      '       CASE WHEN isRepost = true THEN user.username ELSE NULL END AS repost,',
+      '       u2.username AS reply,',
+      '       count(DISTINCT l) AS likes,',
+      '       count(DISTINCT re) AS reposts,',
+      '       r.timestamp AS timestamp',
+      'ORDER BY timestamp DESC'
     ].join('\n'),
     params: { username }
   }

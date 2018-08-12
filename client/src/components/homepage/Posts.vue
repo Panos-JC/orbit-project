@@ -1,8 +1,8 @@
 <template>
 <v-layout column>
-  <v-flex xs12 v-for="postData in posts" :key="postData.id">
+  <v-flex xs12 v-for="post in posts" :key="post.timestamp">
     <v-card>
-      <post :postData="postData.post"></post>
+      <post :post="post"></post>
     </v-card>
   </v-flex>
 </v-layout>

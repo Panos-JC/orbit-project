@@ -8,9 +8,9 @@
       </v-flex>
       <v-flex xs6>
         <v-layout column>
-          <v-flex xs12 v-for="postData in userPosts" :key="postData.post.id">
+          <v-flex xs12 v-for="post in posts" :key="post.timestamp">
             <v-card>
-              <post :postData="postData.post"></post>
+              <post :post="post"></post>
             </v-card>
           </v-flex>
         </v-layout>
@@ -31,7 +31,7 @@ export default {
   data () {
     return {
       userInfo: {},
-      userPosts: [],
+      posts: [],
       dataLoaded: false
     }
   },
@@ -39,7 +39,7 @@ export default {
     const username = this.$store.state.route.params.username
     const data = (await UsersService.show(username)).data
     this.userInfo = data.userInfo
-    this.userPosts = data.posts
+    this.posts = data.posts
     this.dataLoaded = true
   },
   components: {

@@ -1,7 +1,7 @@
 <template>
   <v-container class="pb-1">
     <v-layout wrap>
-      <v-flex xs12 v-if="postData.reposter">
+      <v-flex xs12 v-if="post.reposter">
         <div class="postContext">
           <span class="repostIcon">
             <v-icon>repeat</v-icon>
@@ -13,35 +13,35 @@
         </div>
       </v-flex>
       <v-flex xs1>
-        <a :href="'#/users/' + postData.poster.username">
+        <a :href="'#/users/' + post.username">
           <v-avatar>
-            <img :src="'https://api.adorable.io/avatars/285/' + postData.poster.username + '.png'" alt="avatar">
+            <img :src="'https://api.adorable.io/avatars/285/' + post.username + '.png'" alt="avatar">
           </v-avatar>
         </a>
       </v-flex>
       <v-flex xs11 class="pb-0">
         <div class="post-header ml-3">
-          <a :href="'#/users/' + postData.poster.username" class="post-header-link text-xs-left">
+          <a :href="'#/users/' + post.username" class="post-header-link text-xs-left">
             <span class="fullNameGroup text-xs-left">
             <strong class="fullName text-xs-left">
               {{fullName}}
             </strong>
             </span>
-            <span class="username">@{{postData.poster.username}}</span>
+            <span class="username">@{{post.username}}</span>
             <small class="date">15h</small>
           </a>
         </div>
-        <div class="replyContext text-xs-left" v-if="postData.repliedTo">
-          Replying to <a :href="'#/users/' + postData.repliedTo">@{{postData.repliedTo}}</a>
+        <div class="replyContext text-xs-left" v-if="post.reply">
+          Replying to <a :href="'#/users/' + post.reply">@{{post.reply}}</a>
         </div>
         <div class="post-container ml-3">
           <p class="postText text-xs-left mb-1">
-            <post-content :paragraph="postData.content"></post-content>
+            <post-content :paragraph="post.content"></post-content>
           </p>
         </div>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn icon :to="'/post/' + postData.id">
+          <v-btn icon :to="'/post/' + post.id">
             <v-icon>reply</v-icon>
           </v-btn>
           <button v-if="!liked" class="postActionButton" @click="like">
@@ -115,13 +115,13 @@ export default {
   },
   computed: {
     fullName () {
-      return this.postData.poster.fname + ' ' + this.postData.poster.lname
+      return this.post.fname + ' ' + this.post.lname
     },
     reposter () {
-      if (this.postData.reposter === this.$store.state.user.properties.username) {
+      if (this.post.reposter === this.$store.state.user.properties.username) {
         return 'You'
       } else {
-        return this.postData.reposter
+        return this.post.reposter
       }
     }
   },
@@ -130,7 +130,7 @@ export default {
       try {
         const data = {
           username: this.$store.state.user.properties.username,
-          postId: this.postData.id
+          postId: this.post.id
         }
 
         // like post
@@ -138,7 +138,7 @@ export default {
         console.log(response)
 
         // add post id into store's likedPosts array
-        this.$store.commit('addLikedPost', this.postData.id)
+        this.$store.commit('addLikedPost', this.post.id)
 
         this.liked = true
         this.likeCounter++
@@ -153,7 +153,7 @@ export default {
       try {
         const data = {
           username: this.$store.state.user.properties.username,
-          postId: this.postData.id
+          postId: this.post.id
         }
 
         // unlike post
@@ -161,7 +161,7 @@ export default {
         console.log(response)
 
         // remove post id from store's likedPosts array
-        this.$store.commit('removeLikedPost', this.postData.id)
+        this.$store.commit('removeLikedPost', this.post.id)
 
         this.liked = false
         this.likeCounter--
@@ -176,7 +176,7 @@ export default {
       try {
         const data = {
           username: this.$store.state.user.properties.username,
-          postId: this.postData.id
+          postId: this.post.id
         }
 
         // repost
@@ -184,7 +184,7 @@ export default {
         console.log(response)
 
         // ass post id into store's reposts array
-        this.$store.commit('addRepost', this.postData.id)
+        this.$store.commit('addRepost', this.post.id)
 
         this.reposted = true
         this.repostCounter++
@@ -200,13 +200,13 @@ export default {
       try {
         const data = {
           username: this.$store.state.user.properties.username,
-          postId: this.postData.id
+          postId: this.post.id
         }
 
         const response = (await PostService.removeRepost(data))
         console.log(response)
 
-        this.$store.commit('removeRepost', this.postData.id)
+        this.$store.commit('removeRepost', this.post.id)
 
         this.reposted = false
         this.repostCounter--
@@ -219,19 +219,19 @@ export default {
     }
   },
   created () {
-    if (this.$store.state.likedPosts.includes(this.postData.id)) {
+    if (this.$store.state.likedPosts.includes(this.post.id)) {
       this.liked = true
     }
 
-    if (this.$store.state.reposts.includes(this.postData.id)) {
+    if (this.$store.state.reposts.includes(this.post.id)) {
       this.reposted = true
     }
 
-    this.likeCounter = this.postData.likes
-    this.repostCounter = this.postData.reposts
+    this.likeCounter = this.post.likes
+    this.repostCounter = this.post.reposts
   },
   props: [
-    'postData'
+    'post'
   ],
   components: {
     PostContent
