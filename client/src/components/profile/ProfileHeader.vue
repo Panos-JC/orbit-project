@@ -65,12 +65,12 @@ export default {
   computed: {
     // If a logged in user is following this user, return true
     isFollowee () {
-      return this.$store.state.following.includes(this.username)
+      return this.$store.state.following.includes(this.userInfo.username)
     },
     // If this user is logged in return true
     isLoggedIn () {
       if (this.$store.state.isUserLoggedIn) {
-        return this.$store.state.user.properties.username === this.username
+        return this.$store.state.user.properties.username === this.userInfo.username
       } else {
         return false
       }

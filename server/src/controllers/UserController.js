@@ -20,7 +20,7 @@ module.exports = {
         if (err) return next(err)
 
         res.send({
-          userInfo: userInfo.userInfo,
+          userInfo: userInfo,
           posts: posts
         })
       })
@@ -29,10 +29,10 @@ module.exports = {
 
   // Get user info
   async userInfo (req, res, next) {
-    User.getUserInfo(req.params.username, (err, userInfo) => {
+    User.getUserInfo(req.params.username, (err, result) => {
       if (err) return next(err)
 
-      res.send({userInfo: userInfo.userInfo})
+      res.send(result)
     })
   },
 

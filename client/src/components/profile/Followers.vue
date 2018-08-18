@@ -1,10 +1,10 @@
 <template>
   <div>
-    <profile-header v-if="dataLoaded" :userStats="userStats" :username="user.properties.username"></profile-header>
+    <profile-header v-if="dataLoaded" :userInfo="userInfo"></profile-header>
     <v-container grid-list-md v-if="dataLoaded">
       <v-layout>
         <v-flex xs3>
-          <user-info v-if="dataLoaded" :userData="user.properties"></user-info>
+          <user-info v-if="dataLoaded" :userInfo="userInfo"></user-info>
         </v-flex>
         <v-flex xs9>
           <user-grid v-if="dataLoaded" :users="followers"></user-grid>
@@ -23,8 +23,7 @@ import UserGrid from '@/components/profile/UserGrid'
 export default {
   data () {
     return {
-      user: {},
-      userStats: {},
+      userInfo: {},
       followers: [],
       dataLoaded: false
     }
@@ -32,7 +31,8 @@ export default {
   async created () {
     const username = this.$store.state.route.params.username
     const data = (await UsersService.show(username)).data
-    this.user = data.user
+    this.userInfo = data.userInfo
+    console.log(this.userInfo)
     this.userStats = data.stats
 
     this.followers = (await UsersService.followers(username)).data.followers

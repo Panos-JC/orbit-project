@@ -50,7 +50,7 @@ export default {
     }
   },
   async created () {
-    this.userInfo = (await UserService.userInfo(this.$store.state.user.properties.username)).data.userInfo
+    this.userInfo = (await UserService.userInfo(this.$store.state.user.properties.username)).data
     console.log(this.userInfo)
   }
 }

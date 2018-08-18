@@ -86,17 +86,16 @@ User.create = (data, callback) => {
 User.getUserInfo = (username, callback) => {
   const qp = {
     query: [
-      'OPTIONAL MATCH (u:User {username: {username}})-[followee:FOLLOWS]->()',
-      'WITH u, COUNT(followee) AS following',
-      'OPTIONAL MATCH (u)<-[follower:FOLLOWS]-()',
-      'WITH u, following, COUNT(follower) AS followers',
-      'OPTIONAL MATCH (u)-[r:POSTED|REPOSTED]->()',
-      'RETURN {fname: u.fname,',
-      '        lname: u.lname,',
-      '        username: u.username,',
-      '        followers: followers,',
-      '        following: following,',
-      '        posts: COUNT(r)} AS userInfo'
+      'MATCH (user:User {username: {username}})',
+      'OPTIONAL MATCH (user)-[:FOLLOWS]->(followee)',
+      'OPTIONAL MATCH (user)<-[:FOLLOWS]-(follower)',
+      'OPTIONAL MATCH (user)-[:POSTED|REPOSTED]->(post)',
+      'RETURN user.username AS username,',
+      '       user.fname AS fname,',
+      '       user.lname AS lname,',
+      '       count(DISTINCT post) AS posts,',
+      '       count(DISTINCT followee) AS following,',
+      '       count(DISTINCT follower) AS followers'
     ].join('\n'),
     params: { username }
   }
