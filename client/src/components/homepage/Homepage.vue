@@ -15,9 +15,7 @@
         <posts></posts>
       </v-flex>
       <v-flex xs3>
-        <v-card dark color="primary">
-          <v-card-text class="px-0">TODO: Follow Recomendations</v-card-text>
-        </v-card>
+        <who-to-follow></who-to-follow>
       </v-flex>
     </v-layout>
   </v-container>
@@ -28,6 +26,7 @@ import PageHeader from '@/components/Header'
 import ProfileCard from '@/components/homepage/ProfileCard'
 import Posts from '@/components/homepage/Posts'
 import PopularTags from '@/components/homepage/PopularTags'
+import WhoToFollow from '@/components/homepage/WhoToFollow'
 
 export default {
   name: 'App',
@@ -35,7 +34,8 @@ export default {
     PageHeader,
     ProfileCard,
     Posts,
-    PopularTags
+    PopularTags,
+    WhoToFollow
   }
 }
 </script>

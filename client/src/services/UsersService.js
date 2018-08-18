@@ -57,5 +57,10 @@ export default {
   // Get user's interests
   getInterests (username) {
     return Api().get(`users/${username}/interests`, username)
+  },
+
+  // Get friend recommendations
+  getRecommendations (username) {
+    return Api().post('users/recommendations', {username})
   }
 }

@@ -124,5 +124,15 @@ module.exports = {
         res.send(result)
       }
     })
+  },
+
+  async getRecommendations (req, res) {
+    User.getRecommendations(req.body.username, (err, result) => {
+      if (err) {
+        res.status(400).send(err)
+      } else {
+        res.send(result)
+      }
+    })
   }
 }

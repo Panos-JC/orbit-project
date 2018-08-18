@@ -260,6 +260,28 @@ User.getInterests = (username, callback) => {
   })
 }
 
+User.getRecommendations = (username, callback) => {
+  const qp = {
+    query: [
+      'MATCH (me:User {username: {username}})-[:FOLLOWS]->(followee:User)-[:FOLLOWS]->(sug)',
+      'WHERE me <> sug',
+      'AND NOT (me)-[:FOLLOWS]->(sug)',
+      'RETURN sug.username AS username,',
+      '       sug.fname AS fname,',
+      '       sug.lname AS lname,',
+      '       count(sug) AS common',
+      'ORDER BY common DESC',
+      'LIMIT 3'
+    ].join('\n'),
+    params: { username }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) callback(err)
+    callback(null, result)
+  })
+}
+
 // Passport Functions
 
 User.generateHash = (password, next) => {
