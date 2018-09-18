@@ -5,36 +5,15 @@
         <v-container fluid fill-height>
           <v-layout fill-height>
             <v-flex xs12 flexbox>
-              <span class="headline white--text title">{{place.name}}</span>
             </v-flex>
           </v-layout>
         </v-container>
       </v-card-media>
     </a>
-    <v-card-actions>
-      <v-btn flat v-if="!visited" @click="visited=true">
-        <v-icon>bookmark_border</v-icon>
-        Visit
-      </v-btn>
-      <v-btn flat color="success" v-if="visited" @click="visited=false">
-        <v-icon>bookmark</v-icon>
-        Visited
-      </v-btn>
-      <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>reply</v-icon>
-      </v-btn>
-      <v-btn icon  @click="liked=true" v-if="!liked">
-        <v-icon color="black">favorite</v-icon>
-      </v-btn>
-      <v-btn icon  @click="liked=false" v-if="liked">
-        <v-icon color="red">favorite</v-icon>
-      </v-btn>
-      <v-btn icon @click="reposted=true" v-if="!reposted">
-        <v-icon color="black">repeat</v-icon>
-      </v-btn>
-      <v-btn icon @click="reposted=false" v-if="reposted">
-        <v-icon color="green">repeat</v-icon>
+    <v-card-actions class="pa-3" >
+      <div class="name">{{place.name}}</div>
+      <v-btn fab small color="primary" class="add-btn">
+        <v-icon>add</v-icon>
       </v-btn>
     </v-card-actions>
   </v-card>
@@ -44,8 +23,6 @@
 export default {
   data () {
     return {
-      liked: false,
-      reposted: false,
       visited: false
     }
   },
@@ -61,11 +38,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.red {
-  color: red
-}
 .title {
   float: left;
   text-shadow: 0 0 20px #000;
+}
+
+.name {
+  display: block;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: .01em;
+}
+
+.add-btn {
+  position: absolute;
+  right: 10px;
+  bottom: 32px;
 }
 </style>
