@@ -390,8 +390,10 @@ export default {
             console.log(response)
           } else {
             placeData.data = placeDetails.data
+            let response = (await PlacesService.createPlace(placeData))
             console.log('This is a place')
             console.log(placeData)
+            console.log(response)
           }
         })
     }
