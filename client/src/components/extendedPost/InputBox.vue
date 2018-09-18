@@ -3,16 +3,15 @@
     <v-avatar class="avatar" size="32px">
       <img :src="'https://api.adorable.io/avatars/285/'+ $store.state.user.properties.username +'.png'" alt="avatar">
     </v-avatar>
-    <v-text-field
+    <v-textarea
       solo
       flat
-      multi-line
       no-resize
       counter = "140"
       label="Post your reply"
       class="tf"
       v-model="replytext"
-    ></v-text-field>
+    ></v-textarea>
     <v-layout justify-end>
       <v-btn
         color="primary"
@@ -37,11 +36,9 @@ export default {
     reply () {
       let reply = {
         content: this.replytext,
-        poster: {
-          fname: this.$store.state.user.properties.fname,
-          lname: this.$store.state.user.properties.lname,
-          username: this.$store.state.user.properties.username
-        },
+        fname: this.$store.state.user.properties.fname,
+        lname: this.$store.state.user.properties.lname,
+        username: this.$store.state.user.properties.username,
         likes: 0,
         reposts: 0
       }
