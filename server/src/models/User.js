@@ -90,12 +90,14 @@ User.getUserInfo = (username, callback) => {
       'OPTIONAL MATCH (user)-[:FOLLOWS]->(followee)',
       'OPTIONAL MATCH (user)<-[:FOLLOWS]-(follower)',
       'OPTIONAL MATCH (user)-[:POSTED|REPOSTED]->(post)',
+      'OPTIONAL MATCH (user)-[:VISITED]->(place)',
       'RETURN user.username AS username,',
       '       user.fname AS fname,',
       '       user.lname AS lname,',
       '       count(DISTINCT post) AS posts,',
       '       count(DISTINCT followee) AS following,',
-      '       count(DISTINCT follower) AS followers'
+      '       count(DISTINCT follower) AS followers,',
+      '       count(DISTINCT place) AS visited'
     ].join('\n'),
     params: { username }
   }
