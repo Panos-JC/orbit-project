@@ -6,13 +6,13 @@
     <v-layout>
       <v-flex xs12>
         <v-card class="card--flex-toolbar" width="640px">
-          <post-info :postData="postData" v-if="dataLoaded"></post-info>
-          <input-box :poster="postData.poster" @reply="reply"></input-box>
+          <post-info :post="post" v-if="dataLoaded"></post-info>
+          <input-box :poster="post.poster" @reply="reply"></input-box>
           <v-layout wrap>
             <v-flex xs12>
               <ol class="comments">
                 <li class="comment" v-for="reply in replies" :key="reply.id">
-                  <post :postData="reply"></post>
+                  <post :post="reply"></post>
                 </li>
               </ol>
             </v-flex>
@@ -53,7 +53,7 @@ import PostService from '@/services/PostService'
 export default {
   data () {
     return {
-      postData: {},
+      post: {},
       replies: [],
       dataLoaded: false,
       successSnackbar: false,
@@ -66,23 +66,22 @@ export default {
   },
   methods: {
     async loadData () {
-      this.postData = (await PostService.getPost(this.$route.params.id)).data
+      this.post = (await PostService.getPost(this.$route.params.id)).data
       this.replies = (await PostService.getReplies(this.$route.params.id)).data
-
       this.dataLoaded = true
     },
     async reply (value) {
       try {
         const data = {
           username: this.$store.state.user.properties.username,
-          postId: this.postData.post.id,
+          postId: this.post.id,
           reply: value.content
         }
 
         const response = (await PostService.createReply(data)).data
         console.log(response)
         // -->Create reply
-        this.replies.push(value)
+        this.replies.push(response[0])
         this.successSnackbar = true
         this.message = 'Posted Reply'
       } catch (error) {

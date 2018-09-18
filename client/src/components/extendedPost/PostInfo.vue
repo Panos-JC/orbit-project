@@ -1,44 +1,44 @@
 <template>
-  <v-container v-if="postData">
+  <v-container v-if="post">
     <v-layout wrap>
       <v-flex xs1>
         <v-avatar>
-          <img :src="'https://api.adorable.io/avatars/285/'+ postData.poster.username +'.png'" alt="avatar">
+          <img :src="'https://api.adorable.io/avatars/285/'+ post.username +'.png'" alt="avatar">
         </v-avatar>
       </v-flex>
       <v-flex xs8>
         <a href="" class="account">
           <span class="fullNameGroup">
-            <strong class="fullName">{{postData.poster.fname}} {{postData.poster.lname}}</strong>
+            <strong class="fullName">{{post.fname}} {{post.lname}}</strong>
           </span>
-          <span class="username">@{{postData.poster.username}}</span>
+          <span class="username">@{{post.username}}</span>
         </a>
       </v-flex>
       <v-flex xs3>
         <v-btn color="primary" outline round>Follow</v-btn>
       </v-flex>
       <v-flex xs12 class="text mt-3">
-        <p>{{postData.post.content}}</p>
+        <post-content :paragraph="post.content"></post-content>
       </v-flex>
       <v-flex xs12>
         <ul class="stats">
           <li class="stat">
             <a href="">
-              <strong>{{postData.reposts}}</strong>
+              <strong>{{post.reposts}}</strong>
               Reposts
             </a>
           </li>
           <li class="stat">
             <a href="">
-              <strong>{{postData.likes}}</strong>
+              <strong>{{post.likes}}</strong>
               Likes
             </a>
           </li>
           <li class="avatar-row">
-            <template v-for="user in postData.likers">
-              <a href="" :key="user" class="likerAvatar">
+            <template v-for="liker in post.liked">
+              <a href="" :key="liker" class="likerAvatar">
                 <v-avatar size="24px">
-                  <img :src="'https://api.adorable.io/avatars/285/'+ user +'.png'" alt="">
+                  <img :src="'https://api.adorable.io/avatars/285/'+ liker +'.png'" alt="">
                 </v-avatar>
               </a>
             </template>
@@ -63,10 +63,15 @@
 </template>
 
 <script>
+import PostContent from '@/components/PostContent'
+
 export default {
   props: [
-    'postData'
-  ]
+    'post'
+  ],
+  components: {
+    PostContent
+  }
 }
 </script>
 

@@ -25,8 +25,17 @@ Post.getAll = (callback) => {
 Post.getPost = (id, callback) => {
   const qp = {
     query: [
-      'MATCH (post:Post {id: {postId}})<-[r:POSTED|LIKED|REPOSTED]-(u)',
-      'RETURN post, type(r) AS type, COUNT(u) AS counters, collect(u) AS users'
+      'MATCH (post:Post {id: 39})<-[p:POSTED]-(poster:User)',
+      'OPTIONAL MATCH (post)<-[l:LIKED]-(u:User)',
+      'OPTIONAL MATCH (post)<-[r:REPOSTED]-()',
+      'RETURN post.id AS id,',
+      '      post.content AS content,',
+      '      poster.username AS username,',
+      '      poster.fname AS fname,',
+      '      poster.lname AS lname,',
+      '      COUNT(l) AS likes,',
+      '      COUNT(r) AS reposts,',
+      '      collect(u.username) AS liked'
     ].join('\n'),
     params: {
       postId: parseInt(id)
@@ -35,7 +44,7 @@ Post.getPost = (id, callback) => {
 
   db.cypher(qp, (err, result) => {
     if (err) return callback(err)
-    callback(null, result)
+    callback(null, result[0])
   })
 }
 
@@ -43,11 +52,19 @@ Post.getPost = (id, callback) => {
 Post.getReplies = (postId, callback) => {
   const qp = {
     query: [
-      'MATCH (post:Post {id: {postId}})<-[r:REPLIED_TO]-(reply:Post)<-[:POSTED]-(user:User)',
+      'MATCH (u1)-[:POSTED]->(post:Post {id: 39})<-[r:REPLIED_TO]-(reply:Post)<-[:POSTED]-(user:User)',
       'OPTIONAL MATCH (reply)<-[l:LIKED]-()',
-      'WITH user, reply, COUNT(l) AS likes, r',
+      'WITH user, reply, u1,  COUNT(l) AS likes, r',
       'OPTIONAL MATCH (reply)<-[rep:REPOSTED]-()',
-      'RETURN user, reply, likes, COUNT(rep) AS reposts, r',
+      'RETURN reply.id AS id,',
+      '      reply.content AS content,',
+      '      user.username AS username,',
+      '      user.fname AS fname,',
+      '      user.lname AS lname,',
+      '      u1.username AS reply,',
+      '      likes,',
+      '      COUNT(rep) AS reposts,',
+      '      r.timestamp',
       'ORDER BY r.timestamp'
     ].join('\n'),
     params: { postId: parseInt(postId) }
@@ -67,9 +84,14 @@ Post.createReply = (username, postId, reply, callback) => {
       'ON CREATE SET id.count = 1',
       'ON MATCH SET id.count = id.count + 1',
       'WITH id.count AS uid',
-      'MATCH (user:User {username: {username}}), (post:Post {id: {postId}})',
+      'MATCH (user:User {username: {username}}), (post:Post {id: {postId}})<-[:POSTED]-(poster)',
       'CREATE (user)-[:POSTED {timestamp: timestamp()}]->(reply:Post {id: uid, content: {reply}})-[:REPLIED_TO {timestamp: timestamp()}]->(post)',
-      'RETURN user, reply, post'
+      'RETURN user.username AS username,',
+      '       user.fname AS fname,',
+      '       user.lname AS lname,',
+      '       reply.id AS id,',
+      '       reply.content AS content,',
+      '       poster.username AS reply'
     ].join('\n'),
     params: {
       username,
