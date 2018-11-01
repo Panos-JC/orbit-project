@@ -1,16 +1,6 @@
 <template>
   <div>
-    <profile-header v-if="dataLoaded" :userInfo="userInfo"></profile-header>
-    <v-container grid-list-md v-if="dataLoaded">
-      <v-layout>
-        <v-flex xs3>
-          <user-info v-if="dataLoaded" :userInfo="userInfo"></user-info>
-        </v-flex>
-        <v-flex xs9>
-          <user-grid v-if="dataLoaded" :users="following"></user-grid>
-        </v-flex>
-      </v-layout>
-    </v-container>
+    <user-grid v-if="dataLoaded" :users="following"></user-grid>
   </div>
 </template>
 

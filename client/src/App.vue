@@ -5,7 +5,7 @@
       <main>
         <v-content>
           <v-container fluid class="pa-0">
-            <router-view :key="$route.fullPath"></router-view>
+            <router-view></router-view>
             <create-post v-if="$store.state.isUserLoggedIn" @isCreated="postCreated = true" @isNotCreated="postNotCreated = true"></create-post>
             <v-snackbar
               top

@@ -5,9 +5,13 @@ export default {
   index () {
     return Api().get('users')
   },
-  // Get a single user
+  // Get user info
   show (username) {
     return Api().get(`users/${username}`, username)
+  },
+  // Get user's profile posts
+  getProfilePosts (username) {
+    return Api().get(`users/${username}/posts`, username)
   },
 
   userInfo (username) {

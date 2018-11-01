@@ -11,19 +11,21 @@ module.exports = {
     })
   },
 
-  // Get user info, stats and posts
+  // Get user info (first name, last name, counters for posts, following, followers, and visits)
   async show (req, res, next) {
-    User.getUserInfo(req.params.username, (err, userInfo) => {
+    await User.getUserInfo(req.params.username, (err, userInfo) => {
       if (err) return next(err)
 
-      Post.getUserPosts(req.params.username, (err, posts) => {
-        if (err) return next(err)
+      res.send(userInfo)
+    })
+  },
 
-        res.send({
-          userInfo: userInfo,
-          posts: posts
-        })
-      })
+  // Get user's profile posts (user's posts and reposts)
+  async getProfilePosts (req, res, next) {
+    await Post.getUserPosts(req.params.username, (err, posts) => {
+      if (err) return next(err)
+
+      res.send(posts)
     })
   },
 

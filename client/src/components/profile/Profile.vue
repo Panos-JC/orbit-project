@@ -6,16 +6,9 @@
       <v-flex xs3>
         <user-info v-if="dataLoaded" :userInfo="userInfo"></user-info>
       </v-flex>
-      <v-flex xs6>
-        <v-layout column>
-          <v-flex xs12 v-for="post in posts" :key="post.timestamp">
-            <v-card>
-              <post :post="post"></post>
-            </v-card>
-          </v-flex>
-        </v-layout>
+      <v-flex xs9>
+        <router-view></router-view>
       </v-flex>
-      <v-flex xs3></v-flex>
     </v-layout>
   </v-container>
 </div>
@@ -25,25 +18,22 @@
 import UsersService from '@/services/UsersService'
 import ProfileHeader from './ProfileHeader'
 import UserInfo from './UserInfo'
-import Post from '@/components/Post'
+import Posts from '@/components/profile/Posts'
 
 export default {
   data () {
     return {
       userInfo: {},
-      posts: [],
       dataLoaded: false
     }
   },
   async created () {
     const username = this.$store.state.route.params.username
-    const data = (await UsersService.show(username)).data
-    this.userInfo = data.userInfo
-    this.posts = data.posts
+    this.userInfo = (await UsersService.show(username)).data
     this.dataLoaded = true
   },
   components: {
-    Post,
+    Posts,
     ProfileHeader,
     UserInfo
   }

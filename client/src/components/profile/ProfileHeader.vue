@@ -18,7 +18,7 @@
         </v-flex>
         <v-flex xs6 style="height: 100%">
           <v-toolbar-items class="hidden-sm-and-down">
-            <v-btn flat class="stat" :to="'/users/' + userInfo.username">
+            <v-btn flat class="stat" :to="'/users/' + userInfo.username + '/posts'">
               <span class="label">Posts</span>
               <span class="value">{{userInfo.posts}}</span>
             </v-btn>
