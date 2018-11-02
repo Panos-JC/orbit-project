@@ -29,6 +29,18 @@ export default new Vuex.Store({
       state.user = user
     },
 
+    clearStore (state) {
+      state.token = null
+      state.user = null
+      state.following = []
+      state.likedPosts = []
+      state.reposts = []
+      state.visits = []
+      state.ratings = []
+      state.interests = []
+      state.isUserLoggedIn = false
+    },
+
     /**
      * ====== Liked Posts Methods ======
      */
@@ -128,6 +140,9 @@ export default new Vuex.Store({
     },
     setInterests ({commit}, interests) {
       commit('setInterests', interests)
+    },
+    clearStore ({commit}) {
+      commit('clearStore')
     }
   }
 })

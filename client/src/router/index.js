@@ -12,7 +12,6 @@ import Places from '@/components/places/Places'
 import Place from '@/components/places/Place'
 import ExtendedPost from '@/components/extendedPost/ExtendedPost'
 import Tags from '@/components/Tags'
-import Test from '@/components/test'
 
 Vue.use(Router)
 
@@ -21,11 +20,6 @@ export default new Router({
     {
       path: '/',
       name: 'root'
-    },
-    {
-      path: '/test',
-      name: 'test',
-      component: Test
     },
     {
       path: '/home',
@@ -66,21 +60,6 @@ export default new Router({
         }
       ]
     },
-    // {
-    //   path: '/users/:username',
-    //   name: 'profile',
-    //   component: Profile
-    // },
-    // {
-    //   path: '/users/:username/following',
-    //   name: 'following',
-    //   component: Following
-    // },
-    // {
-    //   path: '/users/:username/followers',
-    //   name: 'followers',
-    //   component: Followers
-    // },
     {
       path: '/post/:id',
       name: 'post',

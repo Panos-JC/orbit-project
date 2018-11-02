@@ -60,9 +60,7 @@
 export default {
   methods: {
     logout () {
-      this.$store.dispatch('setToken', null)
-      this.$store.dispatch('setUser', null)
-      this.$store.dispatch('setFollowing', null)
+      this.$store.dispatch('clearStore', null)
       this.$router.push({
         name: 'home'
       })
