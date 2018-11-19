@@ -8,6 +8,7 @@ import Profile from '@/components/profile/Profile'
 import Posts from '@/components/profile/Posts'
 import Following from '@/components/profile/Following'
 import Followers from '@/components/profile/Followers'
+import Visits from '@/components/profile/Visits'
 import Places from '@/components/places/Places'
 import Place from '@/components/places/Place'
 import ExtendedPost from '@/components/extendedPost/ExtendedPost'
@@ -57,6 +58,10 @@ export default new Router({
         {
           path: 'followers',
           component: Followers
+        },
+        {
+          path: 'visits',
+          component: Visits
         }
       ]
     },

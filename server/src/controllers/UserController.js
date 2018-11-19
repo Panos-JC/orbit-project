@@ -56,6 +56,15 @@ module.exports = {
     })
   },
 
+  // Get user's visits
+  async visits (req, res, next) {
+    await User.getVisits(req.params.username, (err, visits) => {
+      if (err) return next(err)
+
+      res.send(visits)
+    })
+  },
+
   // Follow user
   async follow (req, res, next) {
     User.addUserRel('follow', req.body.user1, req.body.user2, (err) => {

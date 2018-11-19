@@ -30,7 +30,7 @@
               <span class="label">Following</span>
               <span class="value">{{userInfo.following}}</span>
             </v-btn>
-            <v-btn flat class="stat" :to="'/users/' + userInfo.username + '/following'">
+            <v-btn flat class="stat" :to="'/users/' + userInfo.username + '/visits'">
               <span class="label">Visits</span>
               <span class="value">{{userInfo.visited}}</span>
             </v-btn>

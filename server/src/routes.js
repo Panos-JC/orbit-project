@@ -51,11 +51,17 @@ module.exports = (app, passport) => {
   app.get('/users/:username/userInfo',
     UserController.userInfo)
 
+  app.get('/users/:username/posts',
+    UserController.getProfilePosts)
+
   app.get('/users/:username/followers',
     UserController.followers)
 
   app.get('/users/:username/following',
     UserController.following)
+
+  app.get('/users/:username/visits',
+    UserController.visits)
 
   app.get('/users/:username/likes',
     UserController.getLikedPosts)
@@ -85,6 +91,9 @@ module.exports = (app, passport) => {
   app.post('/places/search',
     PlacesApiController.search)
 
+  app.post('/places/auto',
+    PlacesApiController.placeAutocomplete)
+
   app.get('/places/:placeId',
     PlacesApiController.getPlace)
 
@@ -111,6 +120,9 @@ module.exports = (app, passport) => {
 
   app.post('/places/interest',
     PlaceController.interest)
+
+  app.post('/places/addHome',
+    PlaceController.addHomeLocation)
 
   // Post Routes
   app.post('/post/create',

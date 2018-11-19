@@ -140,6 +140,22 @@ User.getFollowing = (username, callback) => {
   })
 }
 
+// Get user's visits
+User.getVisits = (username, callback) => {
+  const qp = {
+    query: [
+      'MATCH (user:User {username: {username}})-[:VISITED]->(place:Place)',
+      'RETURN place.name as name, place.place_id AS place_id'
+    ].join('\n'),
+    params: { username }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) callback(err)
+    callback(null, result)
+  })
+}
+
 // Add relationship between two users
 User.addUserRel = (rel, user1, user2, callback) => {
   let qp = {}
@@ -209,23 +225,6 @@ User.getReposts = (username, callback) => {
   db.cypher(qp, (err, posts) => {
     if (err) callback(err)
     callback(null, posts)
-  })
-}
-
-// Get a user's visited places
-User.getVisits = (username, callback) => {
-  const qp = {
-    query: [
-      'MATCH (user:User {username: {username}})',
-      'MATCH (user)-[r:VISITED]->(place)',
-      'RETURN collect(place.place_id) AS places'
-    ].join('\n'),
-    params: { username }
-  }
-
-  db.cypher(qp, (err, result) => {
-    if (err) callback(err)
-    callback(null, result)
   })
 }
 
