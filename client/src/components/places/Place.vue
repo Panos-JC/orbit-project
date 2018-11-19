@@ -304,7 +304,9 @@ export default {
           data: {
             name: this.placeDetails.name,
             place_id: this.placeDetails.place_id,
-            type: 'country'
+            type: 'country',
+            lat: this.placeDetails.geometry.location.lat,
+            lng: this.placeDetails.geometry.location.lng
           },
           type: 'country'
         }
@@ -319,12 +321,16 @@ export default {
                 locality: {
                   name: this.placeDetails.name,
                   place_id: this.placeDetails.place_id,
-                  type: 'locality'
+                  type: 'locality',
+                  lat: this.placeDetails.geometry.location.lat,
+                  lng: this.placeDetails.geometry.location.lng
                 },
                 country: {
                   name: c[0].name,
                   place_id: c[0].place_id,
-                  type: 'country'
+                  type: 'country',
+                  lat: c[0].geometry.location.lat,
+                  lng: c[0].geometry.location.lng
                 }
               },
               type: 'locality'
@@ -339,6 +345,8 @@ export default {
           if (this.placeDetails.address_components[i].types.includes('locality')) {
             locality = this.placeDetails.address_components[i].long_name
             localityDetails = (await PlacesService.getPlaceByName(locality)).data.candidates
+            console.log('localityDetails')
+            console.log(locality)
           }
           if (this.placeDetails.address_components[i].types.includes('country')) {
             country = this.placeDetails.address_components[i].long_name
@@ -351,17 +359,23 @@ export default {
             place: {
               name: this.placeDetails.name,
               place_id: this.placeDetails.place_id,
-              type: this.placeDetails.types[0]
+              type: this.placeDetails.types[0],
+              lat: this.placeDetails.geometry.location.lat,
+              lng: this.placeDetails.geometry.location.lng
             },
             locality: {
               name: localityDetails[0].name,
               place_id: localityDetails[0].place_id,
-              type: 'locality'
+              type: 'locality',
+              lat: localityDetails[0].geometry.location.lat,
+              lng: localityDetails[0].geometry.location.lng
             },
             country: {
               name: countryDetails[0].name,
               place_id: countryDetails[0].place_id,
-              type: 'country'
+              type: 'country',
+              lat: countryDetails[0].geometry.location.lat,
+              lng: countryDetails[0].geometry.location.lng
             }
           },
           type: 'place'
@@ -373,6 +387,7 @@ export default {
     async mergePlace () {
       this.getPlaceLocations()
         .then(async placeDetails => {
+          console.log(placeDetails)
           let placeData = {
             data: null
           }
