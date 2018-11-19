@@ -20,7 +20,7 @@
     <div v-if="places.length === 0 && !loading">No Results</div>
     <v-container grid-list-lg>
       <v-layout wrap>
-        <v-flex xs4 v-for="place in places" :key="place.id">
+        <v-flex xs4 v-for="place in places" :key="place.place_id">
           <place-card :place="place"></place-card>
         </v-flex>
       </v-layout>

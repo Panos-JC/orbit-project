@@ -25,7 +25,7 @@ Post.getAll = (callback) => {
 Post.getPost = (id, callback) => {
   const qp = {
     query: [
-      'MATCH (post:Post {id: 39})<-[p:POSTED]-(poster:User)',
+      'MATCH (post:Post {id: {postId}})<-[p:POSTED]-(poster:User)',
       'OPTIONAL MATCH (post)<-[l:LIKED]-(u:User)',
       'OPTIONAL MATCH (post)<-[r:REPOSTED]-()',
       'RETURN post.id AS id,',
@@ -52,7 +52,7 @@ Post.getPost = (id, callback) => {
 Post.getReplies = (postId, callback) => {
   const qp = {
     query: [
-      'MATCH (u1)-[:POSTED]->(post:Post {id: 39})<-[r:REPLIED_TO]-(reply:Post)<-[:POSTED]-(user:User)',
+      'MATCH (u1)-[:POSTED]->(post:Post {id: {postId}})<-[r:REPLIED_TO]-(reply:Post)<-[:POSTED]-(user:User)',
       'OPTIONAL MATCH (reply)<-[l:LIKED]-()',
       'WITH user, reply, u1,  COUNT(l) AS likes, r',
       'OPTIONAL MATCH (reply)<-[rep:REPOSTED]-()',

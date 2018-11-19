@@ -1,7 +1,7 @@
 <template>
-  <v-card>
+  <v-card v-if="place">
     <a :href="'#/places/' + place.place_id">
-      <v-card-media :src="'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=' + place.photos[0].photo_reference + '&key=AIzaSyBBbWdvzj7X7wbMFQWQnXA_lWaXFVIwykc'" height="200px">
+      <v-card-media :src="photo" height="200px">
         <v-container fluid fill-height>
           <v-layout fill-height>
             <v-flex xs12 flexbox>
@@ -24,6 +24,15 @@ export default {
   data () {
     return {
       visited: false
+    }
+  },
+  computed: {
+    photo () {
+      if (this.place.photos) {
+        return 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=' + this.place.photos[0].photo_reference + '&key=AIzaSyBBbWdvzj7X7wbMFQWQnXA_lWaXFVIwykc'
+      } else {
+        return 'http://vollrath.com/ClientCss/images/VollrathImages/No_Image_Available.jpg'
+      }
     }
   },
   props: [
