@@ -91,9 +91,6 @@ module.exports = (app, passport) => {
   app.post('/places/search',
     PlacesApiController.search)
 
-  app.post('/places/auto',
-    PlacesApiController.placeAutocomplete)
-
   app.get('/places/:placeId',
     PlacesApiController.getPlace)
 
@@ -120,9 +117,6 @@ module.exports = (app, passport) => {
 
   app.post('/places/interest',
     PlaceController.interest)
-
-  app.post('/places/addHome',
-    PlaceController.addHomeLocation)
 
   // Post Routes
   app.post('/post/create',
