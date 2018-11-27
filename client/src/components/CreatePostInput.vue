@@ -28,11 +28,11 @@ export default {
     members () {
       let members = []
 
-      for (let i = 0; i < this.$store.state.following.length; i++) {
-        let member = {username: ''}
-        member.username = this.$store.state.following[i]
-        members[i] = member
-      }
+      // for (let i = 0; i < this.$store.state.following.length; i++) {
+      //   let member = {username: ''}
+      //   member.username = this.$store.state.following[i]
+      //   members[i] = member
+      // }
       return members
     }
   },

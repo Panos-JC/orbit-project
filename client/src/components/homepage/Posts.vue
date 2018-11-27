@@ -1,7 +1,8 @@
 <template>
 <v-layout column>
   <v-flex xs12 v-for="post in posts" :key="post.timestamp">
-    <v-card>
+    <circle-spinner v-if="loading"></circle-spinner>
+    <v-card v-if="!loading">
       <post :post="post"></post>
     </v-card>
   </v-flex>
@@ -9,20 +10,37 @@
 </template>
 
 <script>
+import {Circle} from 'vue-loading-spinner'
 import Post from '@/components/Post'
 import PostService from '@/services/PostService'
 
 export default {
   data () {
     return {
-      posts: []
+      posts: [],
+      loading: true
     }
   },
+
   async created () {
-    this.posts = (await PostService.getPosts(this.$store.state.user.properties.username)).data
+    this.loadData()
   },
+
+  methods: {
+    async loadData () {
+      try {
+        this.posts = (await PostService.getPosts(this.$store.state.user.properties.username)).data
+        this.loading = false
+      } catch (error) {
+        console.log(error)
+        this.loading = false
+      }
+    }
+  },
+
   components: {
-    Post
+    Post,
+    CircleSpinner: Circle
   }
 }
 </script>

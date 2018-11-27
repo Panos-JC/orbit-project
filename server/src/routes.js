@@ -42,7 +42,7 @@ module.exports = (app, passport) => {
   })
 
   // User Routes
-  app.get('/users',
+  app.post('/users',
     UserController.list)
 
   app.get('/users/:username',
@@ -94,7 +94,7 @@ module.exports = (app, passport) => {
   app.get('/places/:placeId',
     PlacesApiController.getPlace)
 
-  app.get('/places/:placeId/stats',
+  app.post('/places/:placeId/stats',
     PlaceController.getStats)
 
   app.get('/places/name/:placeName',

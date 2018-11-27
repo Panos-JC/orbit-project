@@ -155,18 +155,6 @@ export default {
     placeDetails: {
       type: Object,
       required: true
-    },
-    visited: {
-      type: Boolean,
-      required: true
-    },
-    rated: {
-      type: Boolean,
-      required: true
-    },
-    interested: {
-      type: Boolean,
-      required: true
     }
   }
 }

@@ -2,17 +2,16 @@
 <v-container grid-list-md v-if="$store.state.isUserLoggedIn">
   <v-layout>
     <v-flex xs12>
-      <jawn v-if="showLoading" size="100" class="spinner"></jawn>
+      <circle-spinner v-if="loading" size="100" class="spinner"></circle-spinner>
     </v-flex>
   </v-layout>
-  <v-layout wrap v-if="!showLoading">
-    <v-flex xs3 v-for="(user) in users" :key="user.userData.username" v-if="user.userData.username !== $store.state.user.properties.username">
+  <v-layout wrap v-if="!loading">
+    <v-flex xs3 v-for="user in users" :key="user.username">
       <user-card
-        v-if="!showLoading"
-        :user="user.userData"
-        :following="user.isFollowing"
-        @followed="follow = true"
-        @unfollow="unfollow = true"
+        v-if="!loading"
+        :initialUser="user"
+        @success="showMessage"
+        @error="error = true"
       ></user-card>
     </v-flex>
   </v-layout>
@@ -20,23 +19,23 @@
     top
     color="success"
     :timeout = 2000
-    v-model="follow">
-    Followed
-    <v-btn flat @click.native="follow = false">Close</v-btn>
+    v-model="success">
+    {{message}}
+    <v-btn flat @click.native="success = false">Close</v-btn>
   </v-snackbar>
   <v-snackbar
     top
     color="error"
     :timeout = 2000
-    v-model="unfollow">
-    Unfollowed
-    <v-btn flat @click.native="unfollow = false">Close</v-btn>
+    v-model="error">
+    Something went wrong.
+    <v-btn flat @click.native="error = false">Close</v-btn>
   </v-snackbar>
 </v-container>
 </template>
 
 <script>
-import {Jawn} from 'vue-loading-spinner'
+import {Circle} from 'vue-loading-spinner'
 import UsersService from '@/services/UsersService'
 import UserCard from '@/components/UserCard'
 
@@ -44,51 +43,42 @@ export default {
   data () {
     return {
       users: [],
-      showLoading: true,
-      follow: false,
-      unfollow: false
+      loading: true,
+      success: false,
+      error: false,
+      message: ''
     }
   },
   async created () {
-    const data = (await UsersService.index()).data
-    const following = this.$store.state.following
-
-    this.showButtons(data, following)
-
-    this.showLoading = false
+    this.loadUsers()
   },
   methods: {
-    async showButtons (data, following) {
-      let found = false
-      for (let i = 0; i < data.length; i++) {
-        if (following) {
-          for (let j = 0; j < following.length; j++) {
-            if (data[i].properties.username === following[j]) {
-              found = true
-              break
-            }
-          }
-          if (found) {
-            this.users[i] = {
-              userData: data[i].properties,
-              isFollowing: true
-            }
-          } else {
-            this.users[i] = {
-              userData: data[i].properties,
-              isFollowing: false
-            }
-          }
-        } else {
-          this.users[i] = { userData: data[i].properties }
-        }
-        found = false
+    async loadUsers () {
+      try {
+        this.users = (await UsersService.index({
+          username: this.$store.state.user.properties.username
+        })).data
+        this.loading = false
+      } catch (error) {
+        this.loading = false
       }
-      console.log(this.users)
+    },
+
+    showMessage (value) {
+      this.success = true
+      switch (value) {
+        case 'follow':
+          this.message = 'You followed a user.'
+          break
+
+        case 'unfollow':
+          this.message = 'You unfollowed a user.'
+          break
+      }
     }
   },
   components: {
-    Jawn,
+    CircleSpinner: Circle,
     UserCard
   }
 }

@@ -7,7 +7,7 @@
             <v-icon>repeat</v-icon>
           </span>
           <span class="repostText">
-            <a href="">{{reposter}}</a>
+            <a href="">{{post.reposter}}</a>
             Reposted
           </span>
         </div>
@@ -44,30 +44,30 @@
           <v-btn icon :to="'/post/' + post.id">
             <v-icon>reply</v-icon>
           </v-btn>
-          <button v-if="!liked" class="postActionButton" @click="like">
+          <button v-if="!post.liked" class="postActionButton" @click="like">
             <div class="iconContainer">
               <v-icon>favorite_border</v-icon>
             </div>
-            <span class="actionCount">{{likeCounter}}</span>
+            <span class="actionCount">{{post.likes}}</span>
           </button>
-          <button v-if="liked" class="postActionButton postActionButton-active" @click="unlike">
+          <button v-if="post.liked" class="postActionButton postActionButton-active" @click="unlike">
             <div class="iconContainer">
               <v-icon>favorite</v-icon>
             </div>
-            <span class="actionCount">{{likeCounter}}</span>
+            <span class="actionCount">{{post.likes}}</span>
           </button>
 
-          <button v-if="!reposted" class="postActionButton" @click="repost">
+          <button v-if="!post.reposted" class="postActionButton" @click="repost">
             <div class="iconContainer iconRepost">
               <v-icon>repeat</v-icon>
             </div>
-            <span class="actionCount actionCount-repost">{{repostCounter}}</span>
+            <span class="actionCount actionCount-repost">{{post.reposts}}</span>
           </button>
-          <button v-if="reposted" class="postActionButton postActionButton-active-repost" @click="removeRepost">
+          <button v-if="post.reposted" class="postActionButton postActionButton-active-repost" @click="removeRepost">
             <div class="iconContainer iconRepost">
               <v-icon>repeat</v-icon>
             </div>
-            <span class="actionCount actionCount-repost">{{repostCounter}}</span>
+            <span class="actionCount actionCount-repost">{{post.reposts}}</span>
           </button>
         </v-card-actions>
       </v-flex>
@@ -76,20 +76,10 @@
       bottom
       left
       :timeout=2000
-      color="success"
-      v-model="successSnackbar"
-    >
-      {{ message }}
-      <v-btn flat @click.native="successSnackbar = false">Close</v-btn>
-    </v-snackbar>
-    <v-snackbar
-      bottom
-      left
-      :timeout=2000
       color="error"
       v-model="errorSnackbar"
     >
-      {{ message }}
+      Something went wrong
       <v-btn flat @click.native="errorSnackbar = false">Close</v-btn>
     </v-snackbar>
   </v-container>
@@ -100,29 +90,21 @@ import PostService from '@/services/PostService'
 import PostContent from '@/components/PostContent'
 
 export default {
+  props: {
+    post: {
+      type: Object,
+      required: true
+    }
+  },
   data () {
     return {
-      liked: false,
-      likeCounter: 0,
-      reposted: false,
-      repostCounter: 0,
       dialog: false,
-      message: '',
-      successSnackbar: false,
-      errorSnackbar: false,
-      isRepost: false
+      errorSnackbar: false
     }
   },
   computed: {
     fullName () {
       return this.post.fname + ' ' + this.post.lname
-    },
-    reposter () {
-      if (this.post.reposter === this.$store.state.user.properties.username) {
-        return 'You'
-      } else {
-        return this.post.reposter
-      }
     }
   },
   methods: {
@@ -137,15 +119,10 @@ export default {
         const response = (await PostService.like(data))
         console.log(response)
 
-        // add post id into store's likedPosts array
-        this.$store.commit('addLikedPost', this.post.id)
-
-        this.liked = true
-        this.likeCounter++
-        this.message = 'You liked a post'
-        this.successSnackbar = true
+        // update UI
+        this.post.liked = true
+        this.post.likes++
       } catch (error) {
-        this.message = 'Something went wrong'
         this.errorSnackbar = true
       }
     },
@@ -160,15 +137,10 @@ export default {
         const response = (await PostService.unlike(data))
         console.log(response)
 
-        // remove post id from store's likedPosts array
-        this.$store.commit('removeLikedPost', this.post.id)
-
-        this.liked = false
-        this.likeCounter--
-        this.message = 'Unlikes post'
-        this.successSnackbar = true
+        // update UI
+        this.post.liked = false
+        this.post.likes--
       } catch (error) {
-        this.message = 'Something went wrong'
         this.errorSnackbar = true
       }
     },
@@ -183,15 +155,10 @@ export default {
         const response = (await PostService.repost(data))
         console.log(response)
 
-        // ass post id into store's reposts array
-        this.$store.commit('addRepost', this.post.id)
-
-        this.reposted = true
-        this.repostCounter++
-        this.message = 'Reposted'
-        this.successSnackbar = true
+        // update UI
+        this.post.reposted = true
+        this.post.reposts++
       } catch (error) {
-        this.message = 'Something went wrong'
         this.errorSnackbar = true
       }
       console.log('repost')
@@ -203,36 +170,17 @@ export default {
           postId: this.post.id
         }
 
+        // delete repost
         const response = (await PostService.removeRepost(data))
         console.log(response)
 
-        this.$store.commit('removeRepost', this.post.id)
-
-        this.reposted = false
-        this.repostCounter--
-        this.message = 'Repost removed'
-        this.successSnackbar = true
+        this.post.reposted = false
+        this.post.reposts--
       } catch (error) {
-        this.message = 'Something went wrong'
         this.errorSnackbar = true
       }
     }
   },
-  created () {
-    if (this.$store.state.likedPosts.includes(this.post.id)) {
-      this.liked = true
-    }
-
-    if (this.$store.state.reposts.includes(this.post.id)) {
-      this.reposted = true
-    }
-
-    this.likeCounter = this.post.likes
-    this.repostCounter = this.post.reposts
-  },
-  props: [
-    'post'
-  ],
   components: {
     PostContent
   }

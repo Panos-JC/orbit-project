@@ -9,21 +9,21 @@
                 <v-icon large color="red">favorite</v-icon>
               </div>
               <div class="number">
-                <div class="rating">{{ratingPercentage}}%</div>
-                <div class="votes">{{votes}} votes</div>
+                <div class="rating">{{ratingToPercent}}%</div>
+                <div class="votes">{{placeStats.rateCount}} votes</div>
               </div>
             </li>
             <li class="userRating">
-              <div class="rated-text" v-if="rated">
+              <div class="rated-text" v-if="placeStats.rated">
                 <div class="icon">
                   <v-icon large color="red">favorite</v-icon>
                 </div>
                 <div class="number">
-                  <div class="rating">{{userRating}}</div>
+                  <div class="rating">{{placeStats.rated}}</div>
                   <div class="votes alt">Good</div>
                 </div>
               </div>
-              <div class="rating-text" v-if="!rated">
+              <div class="rating-text" v-if="!placeStats.rated">
                 <div class="icon">
                   <v-icon large>favorite_border</v-icon>
                 </div>
@@ -37,7 +37,7 @@
           <ul class="stats">
             <li>
               <div class="number">
-                <div class="stat">{{visits}}</div>
+                <div class="stat">{{placeStats.visitCount}}</div>
                 <div class="stat-name">visits</div>
               </div>
             </li>
@@ -49,7 +49,7 @@
             </li>
             <li>
               <div class="number">
-                <div class="stat">{{interested}}</div>
+                <div class="stat">{{placeStats.interests}}</div>
                 <div class="stat-name">intrested</div>
               </div>
             </li>
@@ -67,40 +67,30 @@
 </template>
 
 <script>
-import PlacesService from '@/services/PlacesService'
-
 export default {
+  props: {
+    placeStats: {
+      type: Object,
+      required: true,
+      default () {
+        return {
+          rateCount: 0,
+          visitCount: 0,
+          interests: 0,
+          ratingAvg: 0,
+          rated: false,
+          visited: false
+        }
+      }
+    }
+  },
   data () {
     return {
-      visits: 0,
-      interested: 0,
-      rating: 0,
-      votes: 0
     }
-  },
-  async created () {
-    const response = (await PlacesService.getStats(this.placeId)).data
-    this.interested = response.interested
-    this.visits = response.visited
-    this.votes = response.rated
-    this.rating = response.ratingAvg
-    console.log(response)
   },
   computed: {
-    ratingPercentage () {
-      return this.rating * 2 * 10
-    }
-  },
-  props: {
-    rated: {
-      type: Boolean,
-      required: true
-    },
-    userRating: {
-      required: true
-    },
-    placeId: {
-      required: true
+    ratingToPercent () {
+      return this.placeStats.ratingAvg * 2 * 10
     }
   }
 }

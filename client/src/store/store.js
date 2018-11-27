@@ -8,10 +8,6 @@ export default new Vuex.Store({
   state: {
     token: null,
     user: null,
-    following: [],
-    likedPosts: [],
-    reposts: [],
-    visits: [],
     ratings: [],
     interests: [],
     isUserLoggedIn: false
@@ -32,72 +28,10 @@ export default new Vuex.Store({
     clearStore (state) {
       state.token = null
       state.user = null
-      state.following = []
-      state.likedPosts = []
-      state.reposts = []
       state.visits = []
       state.ratings = []
       state.interests = []
       state.isUserLoggedIn = false
-    },
-
-    /**
-     * ====== Liked Posts Methods ======
-     */
-
-    setLikedPosts (state, likedPosts) {
-      state.likedPosts = likedPosts
-    },
-    addLikedPost (state, postId) {
-      state.likedPosts.push(postId)
-    },
-    removeLikedPost (state, postId) {
-      const index = state.likedPosts.indexOf(postId)
-      if (index > -1) {
-        state.likedPosts.splice(index, 1)
-      }
-    },
-
-    /**
-     * ====== Reposts Methods ======
-     */
-
-    setReposts (state, reposts) {
-      state.reposts = reposts
-    },
-    addRepost (state, postId) {
-      state.reposts.push(postId)
-    },
-    removeRepost (state, postId) {
-      const index = state.reposts.indexOf(postId)
-      if (index > -1) {
-        state.reposts.splice(index, 1)
-      }
-    },
-
-    /**
-     * ====== Following Array Methods ======
-     */
-
-    setFollowing (state, following) {
-      state.following = following
-    },
-    addFollowing (state, username) {
-      state.following.push(username)
-    },
-    removeFollowing (state, username) {
-      const index = state.following.indexOf(username)
-      if (index > -1) {
-        state.following.splice(index, 1)
-      }
-    },
-
-    /**
-     * ====== Visits methods ======
-     */
-
-    setVisits (state, visits) {
-      state.visits = visits
     },
 
     /**
@@ -122,18 +56,6 @@ export default new Vuex.Store({
     },
     setUser ({commit}, user) {
       commit('setUser', user)
-    },
-    setFollowing ({commit}, following) {
-      commit('setFollowing', following)
-    },
-    setLikedPosts ({commit}, likedPosts) {
-      commit('setLikedPosts', likedPosts)
-    },
-    setReposts ({commit}, reposts) {
-      commit('setReposts', reposts)
-    },
-    setVisits ({commit}, visits) {
-      commit('setVisits', visits)
     },
     setRatings ({commit}, ratings) {
       commit('setRatings', ratings)

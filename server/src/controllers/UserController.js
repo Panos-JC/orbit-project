@@ -3,15 +3,15 @@ const Post = require('../models/Post')
 
 module.exports = {
   // Get all users
-  async list (req, res, next) {
-    await User.getAll((err, users) => {
-      if (err) return next(err)
+  async list (req, res) {
+    await User.getAll(req.body.username, (err, users) => {
+      if (err) res.status(400).send(err)
 
       res.send(users)
     })
   },
 
-  // Get user info (first name, last name, counters for posts, following, followers, and visits)
+  // Get user info
   async show (req, res, next) {
     await User.getUserInfo(req.params.username, (err, userInfo) => {
       if (err) return next(err)
@@ -68,7 +68,8 @@ module.exports = {
   // Follow user
   async follow (req, res, next) {
     User.addUserRel('follow', req.body.user1, req.body.user2, (err) => {
-      if (err) return next(err)
+      if (err) res.status(400).send(err)
+
       res.send('Followed')
     })
   },
@@ -76,11 +77,8 @@ module.exports = {
   // Unfollow user
   async unFollow (req, res, next) {
     User.addUserRel('unfollow', req.body.user1, req.body.user2, (err) => {
-      if (err) {
-        console.log('UserController error')
-        return next(err)
-      }
-      console.log('UserController')
+      if (err) res.status(400).send(err)
+
       res.send('Unfollowed')
     })
   },
@@ -88,11 +86,9 @@ module.exports = {
   // Get a user's liked posts
   async getLikedPosts (req, res, next) {
     User.getLikedPosts(req.params.username, (err, posts) => {
-      if (err) {
-        res.status(400).send(err)
-      } else {
-        res.send(posts)
-      }
+      if (err) res.status(400).send(err)
+
+      res.send(posts)
     })
   },
 

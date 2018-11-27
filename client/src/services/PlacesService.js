@@ -37,7 +37,7 @@ export default {
     return Api().post('/places/interest', {placeId, username, postContent})
   },
 
-  getStats (placeId) {
-    return Api().get(`places/${placeId}/stats`, placeId)
+  getStats (placeId, username) {
+    return Api().post(`places/${placeId}/stats`, {placeId, username})
   }
 }

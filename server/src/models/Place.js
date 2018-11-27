@@ -161,25 +161,49 @@ Place.interest = (placeId, username, postContent, callback) => {
   })
 }
 
-// Get place stats
-Place.getStats = (placeId, callback) => {
+/**
+ * Returns information about a place. These information include how many visits or ratings
+ * does a place have and weather or not a user has visited rated or interested in this place.
+ * @param {string} placeId The google id of the place.
+ * @param {string} username The username of the logged in user.
+ * @param {function} callback A callback function.
+ */
+Place.getStats = (placeId, username, callback) => {
   const qp = {
     query: [
       'MATCH (place:Place {place_id: {placeId}})',
-      'OPTIONAL MATCH (place)<-[r:RATED]-()',
-      'OPTIONAL MATCH (place)<-[i:INTERESTED_IN]-()',
-      'OPTIONAL MATCH (place)<-[v:VISITED]-()',
-      'RETURN count(DISTINCT i) AS interested,',
-      '       count(DISTINCT v) AS visited,',
-      '       count(DISTINCT r) AS rated,',
-      '       avg(r.rating) AS ratingAvg'
+      'OPTIONAL MATCH (user:User {username: {username}})-[r1:RATED]->(place)',
+      'WITH place, user, r1',
+      'MATCH (place)<-[r:RATED]-(rateUsers)',
+      'WITH place,',
+      '     user,',
+      '     r1,',
+      '     count(*) AS rateCount,',
+      '     avg(r.rating) AS ratingAvg,',
+      '     collect(rateUsers.username) AS ratings',
+      'MATCH (place)<-[:VISITED]-(visitUsers)',
+      'WITH place,',
+      '     user,',
+      '     r1,',
+      '     rateCount,',
+      '     ratingAvg,',
+      '     ratings,',
+      '     count(*) AS visitCount,',
+      '     collect(visitUsers.username) AS visits',
+      'MATCH (place)<-[:INTERESTED_IN]-(interestUsers)',
+      'RETURN rateCount,',
+      '       visitCount,',
+      '       count(*) AS interests,',
+      '       ratingAvg,',
+      '       CASE WHEN user.username IN ratings THEN r1.rating ELSE false END AS rated,',
+      '       CASE WHEN user.username IN visits THEN true ELSE false END AS visited'
     ].join('\n'),
-    params: { placeId }
+    params: { placeId, username }
   }
 
   db.cypher(qp, (err, result) => {
     if (err) callback(err)
-    callback(null, result[0])
+    callback(null, result)
   })
 }
 

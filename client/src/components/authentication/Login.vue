@@ -41,7 +41,6 @@
 
 <script>
 import AuthenticationService from '@/services/AuthenticationService'
-import UsersService from '@/services/UsersService'
 
 export default {
   data () {
@@ -59,56 +58,8 @@ export default {
           password: this.password
         })
 
-        // get followees
-        const data = (await UsersService.following(this.username)).data.following
-
-        // extract usernames from data
-        let following = []
-        for (let i = 0; i < data.length; i++) {
-          following[i] = data[i].properties.username
-        }
-
-        // get liked posts
-        const likedPosts = (await UsersService.getLikedPosts(this.username)).data
-
-        // extract ids from posts
-        let likedPostsIdArray = []
-        for (let i = 0; i < likedPosts.length; i++) {
-          likedPostsIdArray[i] = likedPosts[i].post.properties.id
-        }
-
-        // get reposts
-        const reposts = (await UsersService.getReposts(this.username)).data
-
-        // extract ids from posts
-        let repostsIdArray = []
-        for (let i = 0; i < reposts.length; i++) {
-          repostsIdArray[i] = reposts[i].post.properties.id
-        }
-
-        // get visits
-        const visits = (await UsersService.getVisits(this.username)).data[0].places
-
-        // get ratings
-        const ratings = (await UsersService.getRatings(this.username)).data
-
-        // get interests
-        const interests = (await UsersService.getInterests(this.username)).data[0].interests
-
         this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUser', response.data.user)
-
-        // store only the usernames
-        this.$store.dispatch('setFollowing', following)
-
-        // store only the ids
-        this.$store.dispatch('setLikedPosts', likedPostsIdArray)
-        this.$store.dispatch('setReposts', repostsIdArray)
-
-        // store user's visits, ratings and interests
-        this.$store.dispatch('setVisits', visits)
-        this.$store.dispatch('setRatings', ratings)
-        this.$store.dispatch('setInterests', interests)
 
         this.$router.push({
           name: 'profile',

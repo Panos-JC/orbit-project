@@ -106,25 +106,32 @@ Post.createReply = (username, postId, reply, callback) => {
   })
 }
 
-// Get posts of friends
+/**
+ * Returns all posts created or reposted by a user's friends in reverse chronological order.
+ * @param {string} username The username of the logged in user.
+ * @param {function} callback A callback function.
+ */
 Post.getPosts = (username, callback) => {
   const qp = {
     query: [
-      'MATCH (user:User {username: {username}})-[:FOLLOWS]->(followee:User)-[r:POSTED|REPOSTED]->(post:Post)',
-      'WITH followee, r, post, CASE WHEN type(r) = "REPOSTED" THEN true ELSE false END AS isRepost',
-      'OPTIONAL MATCH (post)<-[:POSTED]-(u)',
+      'MATCH (loggedIn:User {username: {username}})-[:FOLLOWS]-(followee:User)-[r:POSTED|REPOSTED]->(post:Post)',
+      'MATCH (post)<-[:POSTED]-(poster:User)',
+      'OPTIONAL MATCH (post)<-[:LIKED]-(liker:User) WHERE liker.username = loggedIn.username',
       'OPTIONAL MATCH (post)<-[l:LIKED]-()',
+      'OPTIONAL MATCH (post)<-[:REPOSTED]-(reposter:User) WHERE reposter.username = loggedIn.username',
       'OPTIONAL MATCH (post)<-[re:REPOSTED]-()',
-      'OPTIONAL MATCH (post)-[:REPLIED_TO]->(p)<-[:POSTED]-(u2)',
+      'OPTIONAL MATCH (post)-[:REPLIED_TO]->()<-[:POSTED]-(user)',
       'RETURN post.id AS id,',
       '       post.content AS content,',
-      '       u.username as username,',
-      '       u.fname AS fname,',
-      '       u.lname AS lname,',
-      '       CASE WHEN isRepost = true THEN followee.username ELSE null END AS reposter,',
-      '       u2.username AS reply,',
-      '       count(DISTINCT l) AS likes,',
-      '       count(DISTINCT re) AS reposts,',
+      '       poster.username AS username,',
+      '       poster.fname AS fname,',
+      '       poster.lname AS lname,',
+      '       COUNT(DISTINCT l) AS likes,',
+      '       COUNT(DISTINCT re) AS reposts,',
+      '       CASE WHEN type(r) = "REPOSTED" THEN followee.username ELSE false END AS reposter,',
+      '       CASE WHEN liker.username = loggedIn.username THEN true ELSE false END AS liked,',
+      '       CASE WHEN reposter.username = loggedIn.username THEN true ELSE false END AS reposted,',
+      '       user.username AS reply,',
       '       r.timestamp AS timestamp',
       'ORDER BY timestamp DESC'
     ].join('\n'),
@@ -137,25 +144,31 @@ Post.getPosts = (username, callback) => {
   })
 }
 
-// Get a user's posts
+/**
+ * Returns all posts created or reposted by a user in reverse chronological order.
+ * @param {string} username A user's username
+ * @param {function} callback A callback function
+ */
 Post.getUserPosts = (username, callback) => {
   const qp = {
     query: [
-      'MATCH (user:User {username: {username}})-[r:POSTED|REPOSTED]->(post:Post)',
-      'WITH user, r, post, CASE WHEN type(r) = "REPOSTED" THEN true ELSE false END AS isRepost',
-      'OPTIONAL MATCH (post)<-[:POSTED]-(u)',
+      'MATCH (loggedIn:User {username: {username}})-[r:POSTED|REPOSTED]->(post:Post)',
+      'MATCH (post)<-[:POSTED]-(poster:User)',
+      'OPTIONAL MATCH (post)<-[:LIKED]-(liker:User) WHERE liker.username = loggedIn.username',
       'OPTIONAL MATCH (post)<-[l:LIKED]-()',
+      'OPTIONAL MATCH (post)<-[:REPOSTED]-(reposter:User) WHERE reposter.username = loggedIn.username',
       'OPTIONAL MATCH (post)<-[re:REPOSTED]-()',
-      'OPTIONAL MATCH (post)-[:REPLIED_TO]->(p)<-[:POSTED]-(u2)',
+      'OPTIONAL MATCH (post)-[:REPLIED_TO]->()<-[:POSTED]-(user)',
       'RETURN post.id AS id,',
       '       post.content AS content,',
-      '       u.username as username,',
-      '       u.fname AS fname,',
-      '       u.lname AS lname,',
-      '       CASE WHEN isRepost = true THEN user.username ELSE NULL END AS repost,',
-      '       u2.username AS reply,',
-      '       count(DISTINCT l) AS likes,',
-      '       count(DISTINCT re) AS reposts,',
+      '       poster.username AS username,',
+      '       poster.fname AS fname,',
+      '       poster.lname AS lname,',
+      '       COUNT(DISTINCT l) AS likes,',
+      '       COUNT(DISTINCT re) AS reposts,',
+      '       CASE WHEN liker.username = loggedIn.username THEN true ELSE false END AS liked,',
+      '       CASE WHEN reposter.username = loggedIn.username THEN true ELSE false END AS reposted,',
+      '       user.username AS reply,',
       '       r.timestamp AS timestamp',
       'ORDER BY timestamp DESC'
     ].join('\n'),

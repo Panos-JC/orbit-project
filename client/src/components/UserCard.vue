@@ -21,7 +21,7 @@
         color="primary"
         class="follow"
         @click="follow"
-        v-if="!isFollowing && $store.state.isUserLoggedIn"
+        v-if="!user.isFriend"
       >
         Follow
       </v-btn>
@@ -33,7 +33,7 @@
         color="primary"
         class="follow following"
         @click="unfollow"
-        v-if="isFollowing"
+        v-if="user.isFriend"
       >
         Following
       </v-btn>
@@ -48,10 +48,17 @@
 import UsersService from '@/services/UsersService'
 
 export default {
+  props: {
+    initialUser: {
+      type: Object,
+      required: true
+    }
+  },
+
   data () {
     return {
-      message: '',
-      isFollowing: this.following
+      user: this.initialUser,
+      message: ''
     }
   },
   methods: {
@@ -66,14 +73,12 @@ export default {
         // follow user
         this.message = (await UsersService.follow(data)).data
 
-        // add user into store's following array
-        this.$store.commit('addFollowing', this.user.username)
+        this.user.isFriend = true
 
-        this.isFollowing = true
-
-        this.$emit('followed')
+        this.$emit('success', 'follow')
       } catch (error) {
-        console.log('Not followed')
+        console.log('Error: Not followed')
+        this.$emit('error')
       }
     },
 
@@ -86,21 +91,15 @@ export default {
         // unfollow user
         this.message = (await UsersService.unfollow(data)).data
 
-        // remove user from store's following array
-        this.$store.commit('removeFollowing', this.user.username)
+        this.user.isFriend = false
 
-        this.isFollowing = false
-
-        this.$emit('unfollow')
+        this.$emit('success', 'unfollow')
       } catch (error) {
-        console.log('Did not unfollow')
+        console.log('Error: Did not unfollow')
+        this.$emit('error')
       }
     }
-  },
-  props: [
-    'user',
-    'following'
-  ]
+  }
 }
 </script>
 

@@ -14,7 +14,7 @@
       </v-layout>
     </v-container>
   </v-jumbotron>
-  <place-info :rated="rated" :userRating="rating" :placeId="placeDetails.place_id"></place-info>
+  <place-info :placeStats="placeStats"></place-info>
   <v-container grid-list-md>
     <v-layout>
       <v-flex xs6 offset-xs3>
@@ -25,9 +25,6 @@
         <p class="title text-xs-left mb-3 mt-2">Info</p>
         <action-card
           :placeDetails="placeDetails"
-          :visited="visited"
-          :rated="rated"
-          :interested="interested"
           @showRate="showActionDialog('rate')"
           @showVisit="showActionDialog('visit')"
           @showInterest="showActionDialog('interest')"
@@ -122,6 +119,7 @@ export default {
   data () {
     return {
       placeDetails: null,
+      placeStats: {},
       fab: false,
       heart: '',
 
@@ -138,39 +136,24 @@ export default {
       message: '',
       color: '',
 
-      // Actions
-      visited: false,
-      rated: false,
-      interested: false,
-      rating: null,
-
       // Interested input
       postText: ''
     }
   },
   created () {
     this.getPlaceDetails()
-      .then(() => {
-        if (this.$store.state.visits.includes(this.placeDetails.place_id)) {
-          this.visited = true
-        }
-
-        if (this.$store.state.interests.includes(this.placeDetails.place_id)) {
-          this.interested = true
-        }
-
-        this.$store.state.ratings.forEach((rating) => {
-          if (rating.place === this.placeDetails.place_id) {
-            this.rated = true
-            this.rating = rating.rating
-          }
-        })
-      })
   },
   methods: {
     async getPlaceDetails () {
       try {
+        // Get place details from Google Places API
         this.placeDetails = (await PlacesService.getPlace(this.$route.params.placeId)).data.result
+
+        // Get place statistics from database if place exists
+        this.placeStats = (await PlacesService.getStats(
+          this.$route.params.placeId,
+          this.$store.state.user.properties.username
+        )).data
       } catch (error) {
         console.log(error)
       }
@@ -187,12 +170,10 @@ export default {
         console.log(response)
 
         this.snackbar = true
-        this.rated = true
         this.color = 'success'
         this.message = `Rated ${rating} hearts`
         this.rateDialog = false
       } catch (error) {
-        this.rated = false
         this.color = 'error'
         this.message = 'Something went wrong'
       }
@@ -208,12 +189,10 @@ export default {
         console.log(response)
 
         this.snackbar = true
-        this.visited = true
         this.color = 'success'
         this.message = 'Added to visited'
         this.visitDialog = false
       } catch (error) {
-        this.visited = false
         this.color = 'error'
         this.message = 'Something went wrong'
       }

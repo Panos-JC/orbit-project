@@ -46,21 +46,31 @@ User.getBy = (field, value, callback) => {
   })
 }
 
-// Get all users (Limit 100)
-User.getAll = (callback) => {
+/**
+ * Returns an object for every user in the database, excluding the logged in user.
+ * Each object contains the user's info (username, fname, lname) and a boolean
+ * indicating whether or not the user is beeing followed by the logged in user.
+ * @param {string} username The username of the logged in user.
+ * @param {function} callback A callback function.
+ */
+User.getAll = (username, callback) => {
   const qp = {
     query: [
+      'MATCH (loggedUser:User {username: {username}})-[:FOLLOWS]->(user:User)',
+      'WITH collect(user.username) AS friendList, loggedUser',
       'MATCH (user:User)',
-      'RETURN collect(user) AS users',
-      'LIMIT 100'
-    ].join('\n')
+      'WHERE user <> loggedUser',
+      'RETURN user.username AS username,',
+      '       user.fname AS fname,',
+      '       user.lname AS lname,',
+      '       CASE WHEN user.username IN friendList THEN true ELSE false END AS isFriend'
+    ].join('\n'),
+    params: { username }
   }
 
   db.cypher(qp, (err, result) => {
     if (err) return callback(err)
-    console.log('User.getAll: ')
-    console.log(result)
-    callback(null, result[0]['users'])
+    callback(null, result)
   })
 }
 
@@ -156,7 +166,13 @@ User.getVisits = (username, callback) => {
   })
 }
 
-// Add relationship between two users
+/**
+ * Adds or removes the follow relationship between two users
+ * @param {string} rel The follow or unfollow keyword
+ * @param {string} user1 The username of the logged in user
+ * @param {string} user2 The username of the followee
+ * @param {string} callback A callback function
+ */
 User.addUserRel = (rel, user1, user2, callback) => {
   let qp = {}
   switch (rel) {
