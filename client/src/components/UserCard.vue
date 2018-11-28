@@ -1,10 +1,10 @@
 <template>
   <v-card>
-    <v-card-media
+    <v-img
       class="white--text"
       height="100px"
       src="https://dummyimage.com/600x200/858585/ffffff"
-    ></v-card-media>
+    ></v-img>
     <v-card-title class="card-title">
       <div class="card-container">
         <v-avatar class="avatar" size="65">

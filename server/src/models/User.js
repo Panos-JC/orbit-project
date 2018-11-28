@@ -56,14 +56,13 @@ User.getBy = (field, value, callback) => {
 User.getAll = (username, callback) => {
   const qp = {
     query: [
-      'MATCH (loggedUser:User {username: {username}})-[:FOLLOWS]->(user:User)',
-      'WITH collect(user.username) AS friendList, loggedUser',
       'MATCH (user:User)',
+      'MATCH (loggedUser:User {username: {username}})',
       'WHERE user <> loggedUser',
       'RETURN user.username AS username,',
       '       user.fname AS fname,',
       '       user.lname AS lname,',
-      '       CASE WHEN user.username IN friendList THEN true ELSE false END AS isFriend'
+      '       CASE WHEN exists((loggedUser)-[:FOLLOWS]->(user)) THEN true ELSE false END AS isFriend'
     ].join('\n'),
     params: { username }
   }
