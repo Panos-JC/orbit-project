@@ -1,99 +1,102 @@
 <template>
-<v-card>
-  <v-card-media
-    :src="`https://maps.googleapis.com/maps/api/staticmap?center=${placeDetails.geometry.location.lat},${placeDetails.geometry.location.lng}&size=300x200&zoom=17&key=AIzaSyBBbWdvzj7X7wbMFQWQnXA_lWaXFVIwykc`"
-    height="200px"
-  ></v-card-media>
-  <v-speed-dial
-  v-model="fab"
-    direction="top"
-    top
-    left
-  >
-    <v-btn
-      v-model="fab"
-      small
-      slot="activator"
-      fab
-      class="fab"
-      dark
-      color="primary"
+<div>
+  <v-card>
+    <v-card-media
+      :src="`https://maps.googleapis.com/maps/api/staticmap?center=${placeDetails.lat},${placeDetails.lng}&size=300x200&zoom=17&key=AIzaSyBBbWdvzj7X7wbMFQWQnXA_lWaXFVIwykc`"
+      height="200px"
+    ></v-card-media>
+    <v-speed-dial
+    v-model="fab"
+      direction="top"
+      top
+      left
     >
-      <v-icon>add</v-icon>
-      <v-icon>clear</v-icon>
-    </v-btn>
-    <v-btn
-      fab
-      class="fab fab1"
-      dark
-      small
-      :color="interestedColor"
-      @click="$emit('showInterest')"
-    >
-      <v-icon>edit</v-icon>
-    </v-btn>
-    <v-btn
-      fab
-      class="fab fab2"
-      dark
-      small
-      :color="visitedColor"
-      @click="$emit('showVisit')"
-    >
-      <v-icon>directions_car</v-icon>
-    </v-btn>
-    <v-btn
-      fab
-      class="fab fab3"
-      dark
-      small
-      :color="ratedColor"
-      @click="$emit('showRate')"
-    >
-      <v-icon>favorite</v-icon>
-    </v-btn>
-  </v-speed-dial>
-  <v-card-title>
-    <v-layout row wrap class="list">
-      <v-flex xs12>
-        <v-list>
-          <v-list-tile avatar>
-            <v-list-tile-avatar>
-              <v-icon>{{fetchIcon(placeDetails.types[0])}}</v-icon>
-            </v-list-tile-avatar>
-            <v-list-tile-content>
-              <v-list-tile-title>Type</v-list-tile-title>
-              <v-list-tile-sub-title>{{ placeDetails.types[0] }}</v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
-          <v-divider></v-divider>
-          <v-list-tile>
-            <v-list-tile-avatar>
-              <v-icon>location_city</v-icon>
-            </v-list-tile-avatar>
-            <v-list-tile-content>
-              <v-list-tile-title>Location</v-list-tile-title>
-              <v-list-tile-sub-title>{{ placeDetails.vicinity }}</v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
-          <v-divider></v-divider>
-          <v-list-tile>
-            <v-list-tile-avatar>
-              <v-icon>star</v-icon>
-            </v-list-tile-avatar>
-            <v-list-tile-content>
-              <v-list-tile-title>Google Rating</v-list-tile-title>
-              <v-list-tile-sub-title>{{ placeDetails.rating }}</v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </v-list>
-      </v-flex>
-    </v-layout>
-  </v-card-title>
-</v-card>
+      <v-btn
+        v-model="fab"
+        small
+        slot="activator"
+        fab
+        class="fab"
+        dark
+        color="primary"
+      >
+        <v-icon>add</v-icon>
+        <v-icon>clear</v-icon>
+      </v-btn>
+      <v-btn
+        fab
+        class="fab fab1"
+        dark
+        small
+        :color="interestedColor"
+        @click="$emit('interestBtnClicked')"
+      >
+        <v-icon>edit</v-icon>
+      </v-btn>
+      <v-btn
+        fab
+        class="fab fab2"
+        dark
+        small
+        :color="visitedColor"
+        @click="$emit('visitBtnClicked')"
+      >
+        <v-icon>directions_car</v-icon>
+      </v-btn>
+      <v-btn
+        fab
+        class="fab fab3"
+        dark
+        small
+        :color="ratedColor"
+        @click="$emit('rateBtnClicked')"
+      >
+        <v-icon>favorite</v-icon>
+      </v-btn>
+    </v-speed-dial>
+    <v-card-title>
+      <v-layout row wrap class="list">
+        <v-flex xs12>
+          <v-list>
+            <v-list-tile avatar>
+              <v-list-tile-avatar>
+                <v-icon>{{fetchIcon(placeDetails.type)}}</v-icon>
+              </v-list-tile-avatar>
+              <v-list-tile-content>
+                <v-list-tile-title>Type</v-list-tile-title>
+                <v-list-tile-sub-title>{{ placeDetails.type }}</v-list-tile-sub-title>
+              </v-list-tile-content>
+            </v-list-tile>
+            <v-divider></v-divider>
+            <v-list-tile>
+              <v-list-tile-avatar>
+                <v-icon>location_city</v-icon>
+              </v-list-tile-avatar>
+              <v-list-tile-content>
+                <v-list-tile-title>Location</v-list-tile-title>
+                <v-list-tile-sub-title>{{ placeDetails.vicinity }}</v-list-tile-sub-title>
+              </v-list-tile-content>
+            </v-list-tile>
+            <v-divider></v-divider>
+            <v-list-tile>
+              <v-list-tile-avatar>
+                <v-icon>star</v-icon>
+              </v-list-tile-avatar>
+              <v-list-tile-content>
+                <v-list-tile-title>Google Rating</v-list-tile-title>
+                <v-list-tile-sub-title>{{ placeDetails.rating }}</v-list-tile-sub-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list>
+        </v-flex>
+      </v-layout>
+    </v-card-title>
+  </v-card>
+</div>
 </template>
 
 <script>
+
 export default {
   data () {
     return {
@@ -103,19 +106,20 @@ export default {
 
   computed: {
     visitedColor () {
-      if (this.visited) {
+      if (this.placeStats.visited) {
+        console.log(this.placeStats)
         return 'cyan'
       }
       return 'grey darken-2'
     },
     ratedColor () {
-      if (this.rated) {
+      if (this.placeStats.rated) {
         return 'red'
       }
       return 'grey darken-2'
     },
     interestedColor () {
-      if (this.interested) {
+      if (this.placeStats.interested) {
         return 'green'
       }
       return 'grey darken-2'
@@ -153,6 +157,10 @@ export default {
 
   props: {
     placeDetails: {
+      type: Object,
+      required: true
+    },
+    placeStats: {
       type: Object,
       required: true
     }

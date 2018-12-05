@@ -100,13 +100,7 @@ module.exports = (app, passport) => {
   app.get('/places/name/:placeName',
     PlacesApiController.getPlaceByName)
 
-  app.post('/places/create/country',
-    PlaceController.createCountry)
-
-  app.post('/places/create/locality',
-    PlaceController.createLocality)
-
-  app.post('/places/create/place',
+  app.post('/places/create',
     PlaceController.createPlace)
 
   app.post('/places/visit',

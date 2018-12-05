@@ -49,7 +49,7 @@
             </li>
             <li>
               <div class="number">
-                <div class="stat">{{placeStats.interests}}</div>
+                <div class="stat">{{placeStats.interestCount}}</div>
                 <div class="stat-name">intrested</div>
               </div>
             </li>
@@ -90,7 +90,7 @@ export default {
   },
   computed: {
     ratingToPercent () {
-      return this.placeStats.ratingAvg * 2 * 10
+      return Math.round(this.placeStats.ratingAvg * 2 * 10)
     }
   }
 }

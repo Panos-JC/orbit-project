@@ -1,34 +1,33 @@
 const Place = require('../models/Place')
 
 module.exports = {
-  async createCountry (req, res, next) {
-    await Place.createCountry(req.body.data, (err, result) => {
-      if (err) {
-        res.status(400).send(err)
-      } else {
-        res.send(result)
-      }
-    })
-  },
+  async createPlace (req, res) {
+    if (req.body.type === 'country') {
+      await Place.createCountry(req.body, (err, country) => {
+        if (err) res.status(400).send(err)
+        res.send(country)
+      })
+    } else if (req.body.type === 'locality') {
+      const countryData = req.body.country
 
-  async createLocality (req, res, next) {
-    await Place.createLocality(req.body.data, (err, result) => {
-      if (err) {
-        res.status(400).send(err)
-      } else {
-        res.send(result)
-      }
-    })
-  },
+      delete req.body.country
 
-  async createPlace (req, res, next) {
-    await Place.createPlace(req.body.data, (err, result) => {
-      if (err) {
-        res.status(400).send(err)
-      } else {
-        res.send(result)
-      }
-    })
+      await Place.createLocality(countryData, req.body, (err, locality) => {
+        if (err) res.status(400).send(err)
+        res.send(locality)
+      })
+    } else {
+      const countryData = req.body.country
+      const localityData = req.body.locality
+
+      delete req.body.country
+      delete req.body.locality
+
+      await Place.createPlace(countryData, localityData, req.body, (err, place) => {
+        if (err) res.status(400).send(err)
+        res.send(place)
+      })
+    }
   },
 
   async visit (req, res) {

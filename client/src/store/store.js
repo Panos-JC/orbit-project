@@ -8,8 +8,6 @@ export default new Vuex.Store({
   state: {
     token: null,
     user: null,
-    ratings: [],
-    interests: [],
     isUserLoggedIn: false
   },
   mutations: {
@@ -28,26 +26,7 @@ export default new Vuex.Store({
     clearStore (state) {
       state.token = null
       state.user = null
-      state.visits = []
-      state.ratings = []
-      state.interests = []
       state.isUserLoggedIn = false
-    },
-
-    /**
-     * ====== Ratings methods ======
-     */
-
-    setRatings (state, ratings) {
-      state.ratings = ratings
-    },
-
-    /**
-     * ====== Interests methods ======
-     */
-
-    setInterests (state, interests) {
-      state.interests = interests
     }
   },
   actions: {
@@ -56,12 +35,6 @@ export default new Vuex.Store({
     },
     setUser ({commit}, user) {
       commit('setUser', user)
-    },
-    setRatings ({commit}, ratings) {
-      commit('setRatings', ratings)
-    },
-    setInterests ({commit}, interests) {
-      commit('setInterests', interests)
     },
     clearStore ({commit}) {
       commit('clearStore')

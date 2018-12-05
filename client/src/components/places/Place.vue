@@ -4,7 +4,7 @@
     height="300px"
     dark
     :gradient="'to top right, rgba(0,0,0, .4), rgba(100,100,100, .4)'"
-    :src="'https://maps.googleapis.com/maps/api/place/photo?maxwidth=2500&photoreference=' + placeDetails.photos[0].photo_reference + '&key=AIzaSyBBbWdvzj7X7wbMFQWQnXA_lWaXFVIwykc'"
+    :src="'https://maps.googleapis.com/maps/api/place/photo?maxwidth=2500&photoreference=' + placeDetails.photo_reference + '&key=AIzaSyBBbWdvzj7X7wbMFQWQnXA_lWaXFVIwykc'"
   >
     <v-container fill-height>
       <v-layout align-center>
@@ -19,19 +19,54 @@
     <v-layout>
       <v-flex xs6 offset-xs3>
         <p class="title text-xs-left mb-3 mt-2">Google Reviews</p>
-        <place-content :reviews="placeDetails.reviews"></place-content>
+        <!-- <place-content :reviews="placeDetails.reviews"></place-content> -->
       </v-flex>
       <v-flex xs3>
         <p class="title text-xs-left mb-3 mt-2">Info</p>
         <action-card
           :placeDetails="placeDetails"
-          @showRate="showActionDialog('rate')"
-          @showVisit="showActionDialog('visit')"
-          @showInterest="showActionDialog('interest')"
+          :placeStats="placeStats"
+          @visitBtnClicked="visitDialog = true"
+          @rateBtnClicked="rateDialog = true"
+          @interestBtnClicked="interestDialog = true"
         ></action-card>
       </v-flex>
     </v-layout>
   </v-container>
+
+  <!-- VISIT DIALOG -->
+  <v-dialog v-model="visitDialog" max-width="250px">
+    <v-card>
+      <v-card-title class="headline">
+        Have you visited this place?
+      </v-card-title>
+      <v-card-text>
+        Do you want to add this place in your visited list?
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn
+          :loading="btnLoading"
+          :disabled="btnLoading"
+          depressed
+          :dark ="!btnLoading"
+          color="green darken-1"
+          @click="visit()"
+        >
+          Yes
+        </v-btn>
+        <v-btn
+          flat
+          :disabled="btnLoading"
+          color="green darken-1"
+          @click="visitDialog = false">
+          No
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <!-- RATE DIALOG -->
   <v-dialog v-model="rateDialog" max-width="250px">
     <v-card class="rateCard">
       <heart-rating
@@ -46,33 +81,8 @@
       </heart-rating>
     </v-card>
   </v-dialog>
-  <v-dialog v-model="visitDialog" max-width="250px">
-    <v-card>
-      <v-card-title class="headline">
-        Have you visited this place?
-      </v-card-title>
-      <v-card-text>
-        Do you want to add this place in your visited list?
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
-          depressed
-          dark
-          color="green darken-1"
-          @click="visit()"
-        >
-          Yes
-        </v-btn>
-        <v-btn
-          flat
-          color="green darken-1"
-          @click="visitDialog = false">
-          No
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+
+  <!-- INTEREST DIALOG -->
   <v-dialog v-model="interestDialog" max-width="600px">
     <v-card color="cyan" dark>
       <v-card-title>
@@ -85,15 +95,17 @@
           no-resize
           height="150"
           :value="postText"
+          v-model="postText"
         ></v-textarea>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn flat round @click.native="interestDialog = false">Cancel</v-btn>
-        <v-btn color="primary" depressed round dark @click="postInterest">Post</v-btn>
+        <v-btn color="primary" depressed round dark @click="postInterest()">Post</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
+
   <v-snackbar
     top
     :color="color"
@@ -102,13 +114,10 @@
     {{message}}
     <v-btn flat @click.native="rated = false">Close</v-btn>
   </v-snackbar>
-  <loading
-    :show="showLoader"></loading>
 </div>
 </template>
 
 <script>
-import Loading from 'vue-full-loading'
 import PlacesService from '@/services/PlacesService'
 import PlaceInfo from '@/components/places/PlaceInfo'
 import PlaceContent from '@/components/places/PlaceContent'
@@ -120,11 +129,12 @@ export default {
     return {
       placeDetails: null,
       placeStats: {},
+      pageLoading: true,
+
+      btnLoading: false,
+
       fab: false,
       heart: '',
-
-      // loader
-      showLoader: false,
 
       // Dialogs
       rateDialog: false,
@@ -147,257 +157,143 @@ export default {
     async getPlaceDetails () {
       try {
         // Get place details from Google Places API
-        this.placeDetails = (await PlacesService.getPlace(this.$route.params.placeId)).data.result
+        this.placeDetails = (await PlacesService.getPlace(this.$route.params.placeId)).data
+
+        console.log(this.placeDetails)
 
         // Get place statistics from database if place exists
         this.placeStats = (await PlacesService.getStats(
           this.$route.params.placeId,
           this.$store.state.user.properties.username
         )).data
+
+        console.log(this.placeStats)
+
+        this.postText = `I'm interested in visiting ${this.placeDetails.name}, any thoughts?`
+
+        this.pageLoading = false
       } catch (error) {
+        this.pageLoading = false
         console.log(error)
       }
     },
 
     async rate (rating) {
+      console.log('Rate ' + rating)
+
       try {
-        const response = (await PlacesService.rate(
+        // Merge place
+        await PlacesService.mergePlace(this.placeDetails)
+        console.log('MERGE complete')
+
+        // Rate place
+        await PlacesService.rate(
           this.placeDetails.place_id,
           this.$store.state.user.properties.username,
           rating
-        ))
+        )
 
-        console.log(response)
-
+        // UI confirmation
+        this.message = `You rated this place ${rating} hearts`
+        this.color = 'green'
         this.snackbar = true
-        this.color = 'success'
-        this.message = `Rated ${rating} hearts`
+
+        // Get updated place statistics
+        this.placeStats = (await PlacesService.getStats(
+          this.$route.params.placeId,
+          this.$store.state.user.properties.username
+        )).data
+
+        console.log('Rated')
+
         this.rateDialog = false
       } catch (error) {
-        this.color = 'error'
+        console.log(error)
+        this.rateDialog = false
+
         this.message = 'Something went wrong'
+        this.color = 'red'
+        this.snackbar = true
       }
     },
 
     async visit () {
+      this.btnLoading = true
+
       try {
-        const response = (await PlacesService.visit(
+        // Merge place
+        await PlacesService.mergePlace(this.placeDetails)
+        console.log('MERGE complete')
+
+        // Visit place
+        await PlacesService.visit(
           this.placeDetails.place_id,
           this.$store.state.user.properties.username
-        ))
+        )
 
-        console.log(response)
-
+        // UI confirmation
+        this.message = `You visited this place`
+        this.color = 'green'
         this.snackbar = true
-        this.color = 'success'
-        this.message = 'Added to visited'
+
+        // Update frontend
+        this.placeStats.visited = true
+
+        console.log('Visited')
+
+        this.btnLoading = false
         this.visitDialog = false
       } catch (error) {
-        this.color = 'error'
+        console.log(error)
+        this.btnLoading = false
+
         this.message = 'Something went wrong'
+        this.color = 'red'
+        this.snackbar = true
       }
     },
 
     async postInterest () {
+      console.log('interest ' + this.postText)
+
       try {
-        const response = (await PlacesService.interest(
+        // Merge place
+        await PlacesService.mergePlace(this.placeDetails)
+        console.log('MERGE complete')
+
+        // Post interest
+        await PlacesService.interest(
           this.placeDetails.place_id,
           this.$store.state.user.properties.username,
           this.postText
-        ))
+        )
 
-        console.log(response)
-
+        // UI confirmation
+        this.message = `You posted an interest for this place`
+        this.color = 'green'
         this.snackbar = true
-        this.interested = true
-        this.color = 'success'
-        this.message = `Posted interest for ${this.placeDetails.name}`
+
+        // Update frontend
+        this.placeStats.interested = true
+
+        console.log('Posted interest')
+
         this.interestDialog = false
       } catch (error) {
-        this.interested = false
-        this.color = 'error'
+        console.log(error)
+        this.interestDialog = false
+
         this.message = 'Something went wrong'
+        this.color = 'red'
+        this.snackbar = true
       }
-    },
-
-    async showActionDialog (action) {
-      this.showLoader = true
-      switch (action) {
-        case 'interest':
-          try {
-            this.mergePlace()
-              .then(() => {
-                setTimeout(() => {
-                  this.showLoader = false
-                  this.interestDialog = true
-                  this.postText = `I'm interested in visiting ${this.placeDetails.name}, any thoughts?`
-                }, 1000)
-              })
-          } catch (error) {
-            this.showLoader = false
-            this.color = 'error'
-            this.message = 'Something went wrong'
-          }
-          break
-
-        case 'rate':
-          try {
-            this.mergePlace()
-              .then(() => {
-                setTimeout(() => {
-                  this.showLoader = false
-                  this.rateDialog = true
-                }, 1000)
-              })
-          } catch (error) {
-            this.showLoader = false
-            this.color = 'error'
-            this.message = 'Something went wrong'
-          }
-          break
-
-        case 'visit':
-          try {
-            this.mergePlace()
-              .then(() => {
-                setTimeout(() => {
-                  this.visitDialog = true
-                  this.showLoader = false
-                }, 1000)
-              })
-          } catch (error) {
-            this.showLoader = false
-            this.color = 'error'
-            this.message = 'Something went wrong'
-          }
-          break
-      }
-    },
-
-    async getPlaceLocations () {
-      let locality = ''
-      let country = ''
-
-      if (this.placeDetails.types.includes('country')) {
-        return {
-          data: {
-            name: this.placeDetails.name,
-            place_id: this.placeDetails.place_id,
-            type: 'country',
-            lat: this.placeDetails.geometry.location.lat,
-            lng: this.placeDetails.geometry.location.lng
-          },
-          type: 'country'
-        }
-      } else if (this.placeDetails.types.includes('locality') || this.placeDetails.types.includes('natural_feature')) {
-        for (let i = 0; i < this.placeDetails.address_components.length; i++) {
-          if (this.placeDetails.address_components[i].types.includes('country')) {
-            country = this.placeDetails.address_components[i].long_name
-            let c = (await PlacesService.getPlaceByName(country)).data.candidates
-
-            return {
-              data: {
-                locality: {
-                  name: this.placeDetails.name,
-                  place_id: this.placeDetails.place_id,
-                  type: 'locality',
-                  lat: this.placeDetails.geometry.location.lat,
-                  lng: this.placeDetails.geometry.location.lng
-                },
-                country: {
-                  name: c[0].name,
-                  place_id: c[0].place_id,
-                  type: 'country',
-                  lat: c[0].geometry.location.lat,
-                  lng: c[0].geometry.location.lng
-                }
-              },
-              type: 'locality'
-            }
-          }
-        }
-      } else {
-        let localityDetails = ''
-        let countryDetails = ''
-
-        for (let i = 0; i < this.placeDetails.address_components.length; i++) {
-          if (this.placeDetails.address_components[i].types.includes('locality')) {
-            locality = this.placeDetails.address_components[i].long_name
-            localityDetails = (await PlacesService.getPlaceByName(locality)).data.candidates
-            console.log('localityDetails')
-            console.log(locality)
-          }
-          if (this.placeDetails.address_components[i].types.includes('country')) {
-            country = this.placeDetails.address_components[i].long_name
-            countryDetails = (await PlacesService.getPlaceByName(country)).data.candidates
-          }
-        }
-
-        return {
-          data: {
-            place: {
-              name: this.placeDetails.name,
-              place_id: this.placeDetails.place_id,
-              type: this.placeDetails.types[0],
-              lat: this.placeDetails.geometry.location.lat,
-              lng: this.placeDetails.geometry.location.lng
-            },
-            locality: {
-              name: localityDetails[0].name,
-              place_id: localityDetails[0].place_id,
-              type: 'locality',
-              lat: localityDetails[0].geometry.location.lat,
-              lng: localityDetails[0].geometry.location.lng
-            },
-            country: {
-              name: countryDetails[0].name,
-              place_id: countryDetails[0].place_id,
-              type: 'country',
-              lat: countryDetails[0].geometry.location.lat,
-              lng: countryDetails[0].geometry.location.lng
-            }
-          },
-          type: 'place'
-        }
-      }
-    },
-
-    // Create place if not exist
-    async mergePlace () {
-      this.getPlaceLocations()
-        .then(async placeDetails => {
-          console.log(placeDetails)
-          let placeData = {
-            data: null
-          }
-          if (placeDetails.type === 'country') {
-            placeData.data = placeDetails.data
-            let response = (await PlacesService.createCountry(placeData))
-            console.log('This is a country')
-            console.log(placeData)
-            console.log(response)
-          } else if (placeDetails.type === 'locality') {
-            placeData.data = placeDetails.data
-            let response = (await PlacesService.createLocality(placeData))
-            console.log('This is a locality')
-            console.log(placeData)
-            console.log(response)
-          } else {
-            placeData.data = placeDetails.data
-            let response = (await PlacesService.createPlace(placeData))
-            console.log('This is a place')
-            console.log(placeData)
-            console.log(response)
-          }
-        })
     }
   },
   components: {
     PlaceInfo,
     PlaceContent,
     ActionCard,
-    HeartRating,
-    Loading
+    HeartRating
   }
 }
 </script>
@@ -409,6 +305,11 @@ export default {
 
 .icon {
   font-size: 30px;
+}
+
+.spinner {
+  display: inline-block;
+  margin: 200px auto;
 }
 
 .rateCard {

@@ -13,16 +13,8 @@ export default {
     return Api().get(`places/name/${placeName}`, placeName)
   },
 
-  createCountry (data) {
-    return Api().post('/places/create/country', data)
-  },
-
-  createLocality (data) {
-    return Api().post('/places/create/locality', data)
-  },
-
-  createPlace (data) {
-    return Api().post('/places/create/place', data)
+  mergePlace (data) {
+    return Api().post('/places/create', data)
   },
 
   visit (placeId, username) {

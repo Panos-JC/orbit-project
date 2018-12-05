@@ -5,19 +5,22 @@ let Place = module.exports = function Place (_node) {
   this._node = _node
 }
 
-// Create country
+/**
+ * Merges a country. If the country is created, sets its properties.
+ * @param {object} data An object containing the country properties
+ * @param {function} callback A callback function
+ */
 Place.createCountry = (data, callback) => {
+  console.log(data)
   const qp = {
     query: [
-      'MERGE (place:Place {name: {name}, place_id: {id}, type: {type}, lat: {lat}, lng: {lng}})',
-      'RETURN place'
+      'MERGE (c:Place {place_id: {id}})',
+      'ON CREATE SET c += {data}',
+      'RETURN c'
     ].join('\n'),
     params: {
-      name: data.name,
       id: data.place_id,
-      type: data.type,
-      lat: data.lat,
-      lng: data.lng
+      data
     }
   }
 
@@ -27,24 +30,27 @@ Place.createCountry = (data, callback) => {
   })
 }
 
-// Create locality
-Place.createLocality = (data, callback) => {
+/**
+ * Merges a locality type place and the country it is located in.
+ * @param {object} countryData An object containing the country properties
+ * @param {object} localityData An object containing the locality properties
+ * @param {function} callback A callback function
+ */
+Place.createLocality = (countryData, localityData, callback) => {
   const qp = {
     query: [
-      'MERGE (c:Place {name: {countryName}, place_id: {countryId}, type: "country", lat: {countryLat}, lng: {countryLng}})',
-      'MERGE (l:Place {name: {localityName}, place_id: {localityId}, type: "locality", lat: {localityLat}, lng: {localityLng}})',
+      'MERGE (c:Place {place_id: {countryId}})',
+      'ON CREATE SET c += {countryData}',
+      'MERGE (l:Place {place_id: {localityId}})',
+      'ON CREATE SET l += {localityData}',
       'MERGE (l)-[:LOCATED_IN]->(c)',
-      'RETURN c,l'
+      'RETURN c, l'
     ].join('\n'),
     params: {
-      countryName: data.country.name,
-      countryId: data.country.place_id,
-      countryLat: data.country.lat,
-      countryLng: data.country.lng,
-      localityName: data.locality.name,
-      localityId: data.locality.place_id,
-      localityLat: data.locality.lat,
-      localityLng: data.locality.lng
+      countryId: countryData.place_id,
+      countryData,
+      localityId: localityData.place_id,
+      localityData
     }
   }
 
@@ -54,31 +60,33 @@ Place.createLocality = (data, callback) => {
   })
 }
 
-// Create place
-Place.createPlace = (data, callback) => {
+/**
+ * Merges an establishment type place, the locality and the country is is located in.
+ * @param {object} countryData An object containing the country's properties
+ * @param {object} localityData An object containing the locality's properties
+ * @param {object} placeData An object containing the establishment's properties
+ * @param {function} callback A callback function
+ */
+Place.createPlace = (countryData, localityData, placeData, callback) => {
   const qp = {
     query: [
-      'MERGE (c:Place {name: {countryName}, place_id: {countryId}, type: "country", lat: {countryLat}, lng: {countryLng}})',
-      'MERGE (l:Place {name: {localityName}, place_id: {localityId}, type: "locality", lat: {localityLat}, lng: {localityLng}})',
-      'MERGE (p:Place {name: {placeName}, place_id: {placeId}, type: {placeType}, lat: {placeLat}, lng: {placeLng}})',
-      'MERGE (p)-[:LOCATED_IN]->(l)',
+      'MERGE (c:Place {place_id: {countryId}})',
+      'ON CREATE SET c += {countryData}',
+      'MERGE (l:Place {place_id: {localityId}})',
+      'ON CREATE SET l += {localityData}',
+      'MERGE (p:Place {place_id: {placeId}})',
+      'ON CREATE SET p += {placeData}',
       'MERGE (l)-[:LOCATED_IN]->(c)',
+      'MERGE (p)-[:LOCATED_IN]->(l)',
       'RETURN c,l,p'
     ].join('\n'),
     params: {
-      countryName: data.country.name,
-      countryId: data.country.place_id,
-      countryLat: data.country.lat,
-      countryLng: data.country.lng,
-      localityName: data.locality.name,
-      localityId: data.locality.place_id,
-      localityLat: data.locality.lat,
-      localityLng: data.locality.lng,
-      placeName: data.place.name,
-      placeId: data.place.place_id,
-      placeType: data.place.type,
-      placeLat: data.place.lat,
-      placeLng: data.place.lng
+      countryId: countryData.place_id,
+      localityId: localityData.place_id,
+      placeId: placeData.place_id,
+      countryData,
+      localityData,
+      placeData
     }
   }
 
@@ -88,7 +96,12 @@ Place.createPlace = (data, callback) => {
   })
 }
 
-// add visited relationship between a user and a place
+/**
+ * Creates the VISITED relationship between a user and a place
+ * @param {string} placeId The id of the place
+ * @param {string} username The username of the user
+ * @param {function} callback A callback function
+ */
 Place.visit = (placeId, username, callback) => {
   const qp = {
     query: [
@@ -110,7 +123,13 @@ Place.visit = (placeId, username, callback) => {
   })
 }
 
-// add user's rating for a place
+/**
+ * Creates the RATED relationship between a user and a place
+ * @param {string} placeId The id of the place
+ * @param {string} username The username of the user
+ * @param {string} rating The rating of the place by the user
+ * @param {function} callback A callback function
+ */
 Place.rate = (placeId, username, rating, callback) => {
   const qp = {
     query: [
@@ -133,7 +152,13 @@ Place.rate = (placeId, username, rating, callback) => {
   })
 }
 
-// create interest post
+/**
+ * Creates a post indicating that a user is interested in a place
+ * @param {string} placeId The id of the place
+ * @param {string} username The username of the user
+ * @param {string} postContent The text of the post
+ * @param {function} callback A callback function
+ */
 Place.interest = (placeId, username, postContent, callback) => {
   const qp = {
     query: [
@@ -163,7 +188,7 @@ Place.interest = (placeId, username, postContent, callback) => {
 
 /**
  * Returns information about a place. These information include how many visits or ratings
- * does a place have and weather or not a user has visited rated or interested in this place.
+ * does a place have and weather or not a user has visited rated or is interested in this place.
  * @param {string} placeId The google id of the place.
  * @param {string} username The username of the logged in user.
  * @param {function} callback A callback function.
@@ -172,31 +197,42 @@ Place.getStats = (placeId, username, callback) => {
   const qp = {
     query: [
       'MATCH (place:Place {place_id: {placeId}})',
-      'OPTIONAL MATCH (user:User {username: {username}})-[r1:RATED]->(place)',
+      'MATCH (user:User {username: {username}})',
+      'OPTIONAL MATCH (user)-[r1:RATED]->(place)',
       'WITH place, user, r1',
-      'MATCH (place)<-[r:RATED]-(rateUsers)',
+      'OPTIONAL MATCH (place)<-[r:RATED]-(rateUsers)',
       'WITH place,',
       '     user,',
       '     r1,',
-      '     count(*) AS rateCount,',
+      '     count(DISTINCT rateUsers) AS rateCount,',
       '     avg(r.rating) AS ratingAvg,',
       '     collect(rateUsers.username) AS ratings',
-      'MATCH (place)<-[:VISITED]-(visitUsers)',
+      'OPTIONAL MATCH (place)<-[:VISITED]-(visitUsers)',
       'WITH place,',
       '     user,',
       '     r1,',
       '     rateCount,',
       '     ratingAvg,',
       '     ratings,',
-      '     count(*) AS visitCount,',
+      '     count(DISTINCT visitUsers) AS visitCount,',
       '     collect(visitUsers.username) AS visits',
-      'MATCH (place)<-[:INTERESTED_IN]-(interestUsers)',
+      'OPTIONAL MATCH (place)<-[:INTERESTED_IN]-(interestPost)<-[:POSTED]-(interestUsers)',
+      'WITH user,',
+      '     r1,',
+      '     rateCount,',
+      '     visitCount,',
+      '     ratingAvg,',
+      '     count(DISTINCT interestUsers) AS interestCount,',
+      '     collect(interestUsers.username) AS interests,',
+      '     ratings,',
+      '     visits',
       'RETURN rateCount,',
       '       visitCount,',
-      '       count(*) AS interests,',
+      '       interestCount,',
       '       ratingAvg,',
       '       CASE WHEN user.username IN ratings THEN r1.rating ELSE false END AS rated,',
-      '       CASE WHEN user.username IN visits THEN true ELSE false END AS visited'
+      '       CASE WHEN user.username IN visits THEN true ELSE false END AS visited,',
+      '       CASE WHEN user.username IN interests THEN true ELSE false END AS interested'
     ].join('\n'),
     params: { placeId, username }
   }
