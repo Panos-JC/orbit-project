@@ -18,8 +18,7 @@
   <v-container grid-list-md>
     <v-layout>
       <v-flex xs6 offset-xs3>
-        <p class="title text-xs-left mb-3 mt-2">Google Reviews</p>
-        <!-- <place-content :reviews="placeDetails.reviews"></place-content> -->
+        <place-content :friendsVisited="friendsVisited"></place-content>
       </v-flex>
       <v-flex xs3>
         <p class="title text-xs-left mb-3 mt-2">Info</p>
@@ -129,7 +128,10 @@ export default {
     return {
       placeDetails: null,
       placeStats: {},
+      friendsVisited: [],
       pageLoading: true,
+
+      isTooltipActive: true,
 
       btnLoading: false,
 
@@ -158,7 +160,7 @@ export default {
       try {
         // Get place details from Google Places API
         this.placeDetails = (await PlacesService.getPlace(this.$route.params.placeId)).data
-
+        console.log('TEST')
         console.log(this.placeDetails)
 
         // Get place statistics from database if place exists
@@ -167,7 +169,11 @@ export default {
           this.$store.state.user.properties.username
         )).data
 
-        console.log(this.placeStats)
+        // Get friends who visited
+        this.friendsVisited = (await PlacesService.getFriendsVisited(
+          this.$route.params.placeId,
+          this.$store.state.user.properties.username
+        )).data
 
         this.postText = `I'm interested in visiting ${this.placeDetails.name}, any thoughts?`
 

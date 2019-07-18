@@ -9,7 +9,6 @@ module.exports = {
       })
     } else if (req.body.type === 'locality') {
       const countryData = req.body.country
-
       delete req.body.country
 
       await Place.createLocality(countryData, req.body, (err, locality) => {
@@ -82,6 +81,13 @@ module.exports = {
       } else {
         res.send(result[0])
       }
+    })
+  },
+
+  async friendsVisited (req, res) {
+    await Place.friendsVisited(req.body.placeId, req.body.username, (err, result) => {
+      if (err) res.status(400).send(err)
+      res.send(result)
     })
   }
 }

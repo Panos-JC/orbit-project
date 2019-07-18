@@ -31,5 +31,9 @@ export default {
 
   getStats (placeId, username) {
     return Api().post(`places/${placeId}/stats`, {placeId, username})
+  },
+
+  getFriendsVisited (placeId, username) {
+    return Api().post(`places/friendsVisited`, {placeId, username})
   }
 }

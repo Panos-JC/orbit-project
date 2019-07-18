@@ -243,6 +243,31 @@ Place.getStats = (placeId, username, callback) => {
   })
 }
 
+/**
+ * Returns an array of friends that have visited a specific place.
+ * @param {string} placeId The google id of the place.
+ * @param {string} username The username of the logged in user.
+ * @param {function} callback A callback function.
+ */
+Place.friendsVisited = (placeId, username, callback) => {
+  const qp = {
+    query: [
+      'MATCH (user:User)-[:FOLLOWS]->(friend:User)-[:VISITED]->(place:Place)',
+      'WHERE user.username = {username} AND place.place_id = {placeId}',
+      'RETURN friend.username as username'
+    ].join('\n'),
+    params: {
+      placeId,
+      username
+    }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) callback(err)
+    callback(null, result)
+  })
+}
+
 // Add user's home location
 Place.addHomeLocation = (data, username, callback) => {
   const qp = {

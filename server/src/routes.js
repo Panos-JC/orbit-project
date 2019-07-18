@@ -112,6 +112,9 @@ module.exports = (app, passport) => {
   app.post('/places/interest',
     PlaceController.interest)
 
+  app.post('/places/friendsVisited',
+    PlaceController.friendsVisited)
+
   // Post Routes
   app.post('/post/create',
     PostController.create)
