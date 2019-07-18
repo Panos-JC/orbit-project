@@ -49,7 +49,7 @@
             </li>
             <li>
               <div class="number">
-                <div class="stat">{{placeStats.interestCount}}</div>
+                <div class="stat">{{placeStats.interests}}</div>
                 <div class="stat-name">intrested</div>
               </div>
             </li>
