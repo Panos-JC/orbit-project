@@ -33,7 +33,7 @@ function getPlaceByName (req, res) {
  */
 async function getPlace (req, res) {
   const placeId = req.params.placeId
-  
+
   let url = `https://maps.googleapis.com/maps/api/place/details/json?placeid=${placeId}&key=${apiKey}`
   try {
     const response = await fetch(url)
@@ -56,7 +56,6 @@ async function getPlace (req, res) {
       place.country = await getCountry(json.result.address_components)
       console.log(place.country.name)
       place.locality = await getLocality(json.result.address_components, place.country.name)
-      
     }
     res.send(place)
   } catch (error) {
@@ -75,10 +74,9 @@ async function getLocality (placeAddressComponents, countryName) {
   let placeLocality = {}
 
   for (let i = 0; i < placeAddressComponents.length; i++) {
-    if (placeAddressComponents[i].types[0].indexOf('administrative_area_level') > -1
-    || placeAddressComponents[i].types.includes('locality')
-    || placeAddressComponents[i].types.includes('postal_town')) {
-
+    if (placeAddressComponents[i].types[0].indexOf('administrative_area_level') > -1 ||
+    placeAddressComponents[i].types.includes('locality') ||
+    placeAddressComponents[i].types.includes('postal_town')) {
       // Fetch the locality data
       const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${placeAddressComponents[i].long_name}+${countryName}&key=${apiKey}`
       const response = await fetch(url)
@@ -113,7 +111,6 @@ async function getCountry (placeAddressComponents) {
 
   for (let i = 0; i < placeAddressComponents.length; i++) {
     if (placeAddressComponents[i].types.includes('country')) {
-
       // Fetch the country data
       const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${placeAddressComponents[i].long_name}&key=${apiKey}`
       const response = await fetch(url)
