@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import PageHeader from '@/components/Header'
+import PageHeader from '@/components/header/Header'
 import ProfileCard from '@/components/homepage/ProfileCard'
 import Posts from '@/components/homepage/Posts'
 import PopularTags from '@/components/homepage/PopularTags'

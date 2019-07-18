@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import PageHeader from '@/components/Header'
+import PageHeader from '@/components/header/Header'
 import CreatePost from '@/components/CreatePost'
 
 export default {
