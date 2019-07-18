@@ -1,11 +1,10 @@
 <template>
 <v-card v-if="$store.state.isUserLoggedIn">
-  <v-img
-    class="white--text"
-    height="100px"
-    src="https://dummyimage.com/600x200/858585/ffffff"
+  <img
+    height="100%"
+    width="100%"
+    src="https://dummyimage.com/600x200/858585/a68fa6.jpg&text=+"
   >
-  </v-img>
   <v-card-title class="card-title">
     <div class="card-container">
       <v-avatar class="avatar" size="65">
