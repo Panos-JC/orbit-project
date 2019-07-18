@@ -49,7 +49,7 @@
             </li>
             <li>
               <div class="number">
-                <div class="stat">{{placeStats.interests}}</div>
+                <div class="stat">{{placeStats.interestCount}}</div>
                 <div class="stat-name">intrested</div>
               </div>
             </li>
@@ -76,7 +76,7 @@ export default {
         return {
           rateCount: 0,
           visitCount: 0,
-          interests: 0,
+          interestCount: 0,
           ratingAvg: 0,
           rated: false,
           visited: false
