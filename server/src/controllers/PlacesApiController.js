@@ -1,8 +1,7 @@
-require('dotenv').config()
 const request = require('request')
 const fetch = require('node-fetch')
 
-const apiKey = process.env.API_KEY
+const apiKey = require('../config/config.js').apiKey
 
 // search place
 function search (req, res) {
@@ -75,8 +74,8 @@ async function getLocality (placeAddressComponents, countryName) {
 
   for (let i = 0; i < placeAddressComponents.length; i++) {
     if (placeAddressComponents[i].types[0].indexOf('administrative_area_level') > -1 ||
-    placeAddressComponents[i].types.includes('locality') ||
-    placeAddressComponents[i].types.includes('postal_town')) {
+      placeAddressComponents[i].types.includes('locality') ||
+      placeAddressComponents[i].types.includes('postal_town')) {
       // Fetch the locality data
       const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${placeAddressComponents[i].long_name}+${countryName}&key=${apiKey}`
       const response = await fetch(url)
