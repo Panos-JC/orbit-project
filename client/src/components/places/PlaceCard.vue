@@ -1,14 +1,14 @@
 <template>
   <v-card v-if="place">
     <a :href="'#/places/' + place.place_id">
-      <v-card-media :src="photo" height="200px">
+      <v-img :src="photo" height="200px">
         <v-container fluid fill-height>
           <v-layout fill-height>
             <v-flex xs12 flexbox>
             </v-flex>
           </v-layout>
         </v-container>
-      </v-card-media>
+      </v-img>
     </a>
     <v-card-actions class="pa-3" >
       <div class="name">{{place.name}}</div>
