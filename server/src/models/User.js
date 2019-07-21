@@ -298,6 +298,32 @@ User.getRecommendations = (username, callback) => {
   })
 }
 
+User.getVisitorFriends = (username, placeId, callback) => {
+  const qp = {
+    query: [
+      'MATCH (user:User {username: {username}})',
+      'MATCH (user)-[:FOLLOWS]->(followee:User)',
+      'WITH collect(followee) AS followeeList, user',
+      'MATCH (follower:User)-[:FOLLOWS]->(user)',
+      'WITH followeeList, collect(follower) AS followerList',
+      'WITH [x IN followeeList WHERE x IN followerList] AS friendsList',
+      'UNWIND friendsList AS friends',
+      'MATCH (place:Place {place_id: {placeId}})',
+      'MATCH (friends)-[:VISITED]->(place)',
+      'RETURN collect(friends.username) AS friendVisitors'
+    ].join('\n'),
+    params: {
+      username,
+      placeId
+    }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) callback(err)
+    callback(null, result[0])
+  })
+}
+
 // Passport Functions
 
 User.generateHash = (password, next) => {

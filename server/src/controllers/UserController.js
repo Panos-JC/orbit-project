@@ -141,5 +141,13 @@ module.exports = {
         res.send(result)
       }
     })
+  },
+
+  async getVisitorFriends (req, res) {
+    User.getVisitorFriends(req.body.username, req.body.placeId, (err, result) => {
+      console.log(req.body)
+      if (err) res.status(400).send(err)
+      res.send(result)
+    })
   }
 }

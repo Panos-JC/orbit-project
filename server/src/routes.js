@@ -87,6 +87,9 @@ module.exports = (app, passport) => {
   app.post('/users/recommendations',
     UserController.getRecommendations)
 
+  app.post('/users/visitor_friends',
+    UserController.getVisitorFriends)
+
   // Places Routes
   app.post('/places/search',
     PlacesApiController.search)
