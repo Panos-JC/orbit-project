@@ -8,6 +8,7 @@ export default new Vuex.Store({
   state: {
     token: null,
     user: null,
+    notifications: [],
     isUserLoggedIn: false
   },
   mutations: {
@@ -27,6 +28,9 @@ export default new Vuex.Store({
       state.token = null
       state.user = null
       state.isUserLoggedIn = false
+    },
+    setNotifications (state, notifications) {
+      state.notifications = notifications
     }
   },
   actions: {
@@ -38,6 +42,9 @@ export default new Vuex.Store({
     },
     clearStore ({commit}) {
       commit('clearStore')
+    },
+    setNotifications ({commit}, notifications) {
+      commit('setNotifications', notifications)
     }
   }
 })

@@ -298,6 +298,12 @@ User.getRecommendations = (username, callback) => {
   })
 }
 
+/**
+ * Returns an array of friends of a user who visited a spesific place
+ * @param {string} username The username of the logged in user
+ * @param {string} placeId The id of a place
+ * @param {function} callback A callback function
+ */
 User.getVisitorFriends = (username, placeId, callback) => {
   const qp = {
     query: [
@@ -321,6 +327,48 @@ User.getVisitorFriends = (username, placeId, callback) => {
   db.cypher(qp, (err, result) => {
     if (err) callback(err)
     callback(null, result[0])
+  })
+}
+
+User.createNotification = (username, notification, callback) => {
+  const qp = {
+    query: [
+      'MATCH (user:User {username: {username}})',
+      'OPTIONAL MATCH (user)-[r:LAST_NOTIFICATION]->(old:Notification)',
+      'DELETE r',
+      'CREATE (new:Notification {content: {notification}})',
+      'CREATE (user)-[:LAST_NOTIFICATION]->(new)',
+      'WITH collect(old) AS oldList, new',
+      'FOREACH (x IN oldList | CREATE (new)-[:PREVIOUS_NOTIFICATION]->(x))',
+      'RETURN new'
+    ].join('\n'),
+    params: {
+      username,
+      notification
+    }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) callback(err)
+    callback(null, result)
+  })
+}
+
+User.getNotifications = (username, callback) => {
+  const qp = {
+    query: [
+      'MATCH (user:User {username: {username}})',
+      'OPTIONAL MATCH (user)-[:LAST_NOTIFICATION]->(n:Notification)',
+      'WITH collect(n.content) AS list, n',
+      'OPTIONAL MATCH (n)-[:PREVIOUS_NOTIFICATION*1..10]->(n2)',
+      'RETURN list + collect(n2.content) AS notifications'
+    ].join('\n'),
+    params: { username }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) callback(err)
+    callback(null, result)
   })
 }
 

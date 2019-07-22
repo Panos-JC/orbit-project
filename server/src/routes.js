@@ -90,6 +90,12 @@ module.exports = (app, passport) => {
   app.post('/users/visitor_friends',
     UserController.getVisitorFriends)
 
+  app.post('/users/create_notification',
+    UserController.createNotification)
+
+  app.get('/users/:username/notifications',
+    UserController.getNotifications)
+
   // Places Routes
   app.post('/places/search',
     PlacesApiController.search)

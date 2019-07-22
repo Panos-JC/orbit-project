@@ -145,7 +145,20 @@ module.exports = {
 
   async getVisitorFriends (req, res) {
     User.getVisitorFriends(req.body.username, req.body.placeId, (err, result) => {
-      console.log(req.body)
+      if (err) res.status(400).send(err)
+      res.send(result)
+    })
+  },
+
+  async createNotification (req, res) {
+    User.createNotification(req.body.username, req.body.notification, (err, result) => {
+      if (err) res.status(400).send(err)
+      res.send(result)
+    })
+  },
+
+  async getNotifications (req, res) {
+    User.getNotifications(req.params.username, (err, result) => {
       if (err) res.status(400).send(err)
       res.send(result)
     })

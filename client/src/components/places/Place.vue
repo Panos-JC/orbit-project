@@ -118,6 +118,7 @@
 
 <script>
 import PlacesService from '@/services/PlacesService'
+import UsersService from '@/services/UsersService'
 import PlaceInfo from '@/components/places/PlaceInfo'
 import PlaceContent from '@/components/places/PlaceContent'
 import ActionCard from '@/components/places/ActionCard'
@@ -160,8 +161,6 @@ export default {
       try {
         // Get place details from Google Places API
         this.placeDetails = (await PlacesService.getPlace(this.$route.params.placeId)).data
-        console.log('TEST')
-        console.log(this.placeDetails)
 
         // Get place statistics from database if place exists
         this.placeStats = (await PlacesService.getStats(
@@ -260,19 +259,31 @@ export default {
     },
 
     async postInterest () {
-      console.log('interest ' + this.postText)
-
       try {
         // Merge place
         await PlacesService.mergePlace(this.placeDetails)
         console.log('MERGE complete')
 
-        // Post interest
-        await PlacesService.interest(
-          this.placeDetails.place_id,
+        // // Post interest
+        // await PlacesService.interest(
+        //   this.placeDetails.place_id,
+        //   this.$store.state.user.properties.username,
+        //   this.postText
+        // )
+
+        // Get friends who visited this place
+        const visitors = (await UsersService.getVisitorFriends(
           this.$store.state.user.properties.username,
-          this.postText
-        )
+          this.placeDetails.place_id
+        )).data.friendVisitors
+        console.log(visitors)
+
+        for (const visitor of visitors) {
+          await UsersService.createNotification(
+            visitor,
+            this.$store.state.user.properties.username + ' is interested in ' + this.placeDetails.name
+          )
+        }
 
         // UI confirmation
         this.message = `You posted an interest for this place`

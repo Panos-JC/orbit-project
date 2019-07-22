@@ -41,6 +41,7 @@
 
 <script>
 import AuthenticationService from '@/services/AuthenticationService'
+import UsersService from '@/services/UsersService'
 
 export default {
   data () {
@@ -58,8 +59,11 @@ export default {
           password: this.password
         })
 
+        const notifications = (await UsersService.getNotifications(response.data.user.properties.username)).data[0].notifications
+
         this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUser', response.data.user)
+        this.$store.dispatch('setNotifications', notifications)
 
         this.$router.push({
           name: 'profile',

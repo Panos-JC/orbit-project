@@ -66,5 +66,17 @@ export default {
   // Get friend recommendations
   getRecommendations (username) {
     return Api().post('users/recommendations', {username})
+  },
+
+  getVisitorFriends (username, placeId) {
+    return Api().post('users/visitor_friends', {username, placeId})
+  },
+
+  createNotification (username, notification) {
+    return Api().post('users/create_notification', {username, notification})
+  },
+
+  getNotifications (username) {
+    return Api().get(`users/${username}/notifications`, username)
   }
 }
