@@ -162,5 +162,12 @@ module.exports = {
       if (err) res.status(400).send(err)
       res.send(result)
     })
+  },
+
+  async deleteNotifications (req, res) {
+    User.deleteNotifications(req.params.username, (err, result) => {
+      if (err) res.status(400).send(err)
+      res.send(result)
+    })
   }
 }

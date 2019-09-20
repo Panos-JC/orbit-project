@@ -78,5 +78,9 @@ export default {
 
   getNotifications (username) {
     return Api().get(`users/${username}/notifications`, username)
+  },
+
+  deleteNotifications (username) {
+    return Api().delete(`users/${username}/notifications`, username)
   }
 }

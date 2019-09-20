@@ -96,6 +96,9 @@ module.exports = (app, passport) => {
   app.get('/users/:username/notifications',
     UserController.getNotifications)
 
+  app.delete('/users/:username/notifications',
+    UserController.deleteNotifications)
+
   // Places Routes
   app.post('/places/search',
     PlacesApiController.search)

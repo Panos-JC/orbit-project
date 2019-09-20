@@ -299,7 +299,7 @@ User.getRecommendations = (username, callback) => {
 }
 
 /**
- * Returns an array of friends of a user who visited a spesific place
+ * Returns an array of friends of a user who visited a specific place
  * @param {string} username The username of the logged in user
  * @param {string} placeId The id of a place
  * @param {function} callback A callback function
@@ -330,6 +330,12 @@ User.getVisitorFriends = (username, placeId, callback) => {
   })
 }
 
+/**
+ * Creates a new notification
+ * @param {string} username The username of the logged in user
+ * @param {string} notification The contents of the notification
+ * @param {function} callback A callback function
+ */
 User.createNotification = (username, notification, callback) => {
   const qp = {
     query: [
@@ -354,6 +360,11 @@ User.createNotification = (username, notification, callback) => {
   })
 }
 
+/**
+ * Returns all notifications of a user
+ * @param {string} username The username of the logged in user
+ * @param {function} callback A callback function
+ */
 User.getNotifications = (username, callback) => {
   const qp = {
     query: [
@@ -362,6 +373,30 @@ User.getNotifications = (username, callback) => {
       'WITH collect(n.content) AS list, n',
       'OPTIONAL MATCH (n)-[:PREVIOUS_NOTIFICATION*1..10]->(n2)',
       'RETURN list + collect(n2.content) AS notifications'
+    ].join('\n'),
+    params: { username }
+  }
+
+  db.cypher(qp, (err, result) => {
+    if (err) callback(err)
+    callback(null, result)
+  })
+}
+
+/**
+ * Deletes all notifications of a user
+ * @param {string} username The username of the logged in user
+ * @param {function} callback A callback function
+ */
+User.deleteNotifications = (username, callback) => {
+  const qp = {
+    query: [
+      'MATCH (user:User {username: {username}})',
+      'OPTIONAL MATCH (user)-[r:LAST_NOTIFICATION]->(n:Notification)',
+      'WITH n, r',
+      'OPTIONAL MATCH (n)-[r2:PREVIOUS_NOTIFICATION*1..10]->(n2)',
+      'FOREACH(r in r2 | DELETE r)',
+      'DELETE n, n2, r'
     ].join('\n'),
     params: { username }
   }

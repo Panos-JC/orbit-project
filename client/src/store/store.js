@@ -31,6 +31,9 @@ export default new Vuex.Store({
     },
     setNotifications (state, notifications) {
       state.notifications = notifications
+    },
+    deleteNotifications (state) {
+      state.notifications = []
     }
   },
   actions: {
@@ -45,6 +48,9 @@ export default new Vuex.Store({
     },
     setNotifications ({commit}, notifications) {
       commit('setNotifications', notifications)
+    },
+    deleteNotifications ({commit}) {
+      commit('deleteNotifications')
     }
   }
 })
