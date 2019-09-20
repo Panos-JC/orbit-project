@@ -1,19 +1,20 @@
 <template>
 <div v-if="placeDetails">
-  <v-jumbotron
-    height="300px"
-    dark
-    :gradient="'to top right, rgba(0,0,0, .4), rgba(100,100,100, .4)'"
-    :src="'https://maps.googleapis.com/maps/api/place/photo?maxwidth=2500&photoreference=' + placeDetails.photo_reference + '&key=AIzaSyBBbWdvzj7X7wbMFQWQnXA_lWaXFVIwykc'"
-  >
+  <v-responsive height="300">
+    <v-img
+      :src="'https://maps.googleapis.com/maps/api/place/photo?maxwidth=2500&photoreference=' + placeDetails.photo_reference + '&key=AIzaSyBBbWdvzj7X7wbMFQWQnXA_lWaXFVIwykc'"
+      max-height="300"
+      :gradient="'to top right, rgba(0,0,0, .4), rgba(100,100,100, .4)'"
+    >
     <v-container fill-height>
       <v-layout align-center>
         <v-flex text-xs-center>
-          <h3 class="display-3 name">{{placeDetails.name}}</h3>
+          <h3 class="display-3 name white--text">{{placeDetails.name}}</h3>
         </v-flex>
       </v-layout>
     </v-container>
-  </v-jumbotron>
+    </v-img>
+  </v-responsive>
   <place-info :placeStats="placeStats"></place-info>
   <v-container grid-list-md>
     <v-layout>
@@ -68,16 +69,17 @@
   <!-- RATE DIALOG -->
   <v-dialog v-model="rateDialog" max-width="250px">
     <v-card class="rateCard">
-      <heart-rating
-        :spacing="3"
-        :increment="1"
-        :fixed-points="2"
-        :item-size="27"
-        :active-color="'#F44336'"
-        :inactive-color="'#E0E0E0'"
-        :border-color="'#fff'"
-        @rating-selected="rate($event)">
-      </heart-rating>
+      <v-rating
+        v-model="rating"
+        empty-icon="favorite_border"
+        full-icon="favorite"
+        hover
+        dense
+        size='35'
+        color="#F44336"
+        background-color="grey lighten-1"
+        @input="rate()"
+      ></v-rating>
     </v-card>
   </v-dialog>
 
@@ -122,7 +124,6 @@ import UsersService from '@/services/UsersService'
 import PlaceInfo from '@/components/places/PlaceInfo'
 import PlaceContent from '@/components/places/PlaceContent'
 import ActionCard from '@/components/places/ActionCard'
-import {HeartRating} from 'vue-rate-it'
 
 export default {
   data () {
@@ -135,9 +136,7 @@ export default {
       isTooltipActive: true,
 
       btnLoading: false,
-
-      fab: false,
-      heart: '',
+      rating: 0,
 
       // Dialogs
       rateDialog: false,
@@ -183,9 +182,7 @@ export default {
       }
     },
 
-    async rate (rating) {
-      console.log('Rate ' + rating)
-
+    async rate () {
       try {
         // Merge place
         await PlacesService.mergePlace(this.placeDetails)
@@ -195,11 +192,11 @@ export default {
         await PlacesService.rate(
           this.placeDetails.place_id,
           this.$store.state.user.properties.username,
-          rating
+          this.rating
         )
 
         // UI confirmation
-        this.message = `You rated this place ${rating} hearts`
+        this.message = `You rated this place ${this.rating} hearts`
         this.color = 'green'
         this.snackbar = true
 
@@ -264,12 +261,12 @@ export default {
         await PlacesService.mergePlace(this.placeDetails)
         console.log('MERGE complete')
 
-        // // Post interest
-        // await PlacesService.interest(
-        //   this.placeDetails.place_id,
-        //   this.$store.state.user.properties.username,
-        //   this.postText
-        // )
+        // Post interest
+        await PlacesService.interest(
+          this.placeDetails.place_id,
+          this.$store.state.user.properties.username,
+          this.postText
+        )
 
         // Get friends who visited this place
         const visitors = (await UsersService.getVisitorFriends(
@@ -309,17 +306,12 @@ export default {
   components: {
     PlaceInfo,
     PlaceContent,
-    ActionCard,
-    HeartRating
+    ActionCard
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.jumbotron__image {
-  top: 0px !important;
-}
-
 .icon {
   font-size: 30px;
 }

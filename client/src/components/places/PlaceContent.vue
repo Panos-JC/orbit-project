@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="friendsVisited.length > 0">
     <p class="title text-xs-left mb-3 mt-2">Friends Visited</p>
       <v-card class="pa-4 text-md-left">
         <v-tooltip
@@ -19,11 +19,6 @@
 
 <script>
 export default {
-  data () {
-    return {
-      usersVisited: ['tony', 'panos']
-    }
-  },
   props: {
     friendsVisited: {
       type: Array,

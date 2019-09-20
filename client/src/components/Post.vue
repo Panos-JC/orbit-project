@@ -28,7 +28,6 @@
             </strong>
             </span>
             <span class="username">@{{post.username}}</span>
-            <small class="date">15h</small>
           </a>
         </div>
         <div class="replyContext text-xs-left" v-if="post.reply">
@@ -161,7 +160,6 @@ export default {
       } catch (error) {
         this.errorSnackbar = true
       }
-      console.log('repost')
     },
     async removeRepost () {
       try {
@@ -243,12 +241,6 @@ export default {
   text-overflow: ellipsis!important;
   white-space: nowrap!important;
   word-wrap: normal!important;
-}
-
-small.date {
-  color: #657786;
-  white-space: nowrap;
-  margin-left: 5px;
 }
 
 .postActionButton {

@@ -1,14 +1,11 @@
 <template>
   <div>
-    <v-jumbotron height="320" color="primary" dark>
-    <v-container fill-height>
-      <v-layout align-center>
-        <v-flex text-xs-center>
-          <h3 class="display-3">Custom Color</h3>
-        </v-flex>
-      </v-layout>
-    </v-container>
-  </v-jumbotron>
+    <v-responsive height="300">
+    <v-img
+      src="https://picsum.photos/id/626/1500/500"
+      max-height="300"
+    ></v-img>
+  </v-responsive>
     <v-toolbar color="white">
       <v-layout row style="height: 100%">
         <v-flex xs3>
@@ -36,29 +33,6 @@
             </v-btn>
           </v-toolbar-items>
         </v-flex>
-        <v-flex xs3>
-          <v-btn
-            v-if="isLoggedIn"
-            outline
-            round
-            color="grey darken-3"
-            class="edit-btn"
-          >Edit Profile</v-btn>
-          <v-btn
-            v-if="!isLoggedIn && !isFollowee"
-            outline
-            round
-            color="primary"
-            class="edit-btn"
-          >Follow</v-btn>
-          <v-btn
-            v-if="isFollowee"
-            depressed
-            round
-            color="primary"
-            class="edit-btn"
-          >Following</v-btn>
-        </v-flex>
       </v-layout>
     </v-toolbar>
   </div>
@@ -67,11 +41,6 @@
 <script>
 export default {
   computed: {
-    // If a logged in user is following this user, return true
-    isFollowee () {
-      // return this.$store.state.following.includes(this.userInfo.username)
-      return 1
-    },
     // If this user is logged in return true
     isLoggedIn () {
       if (this.$store.state.isUserLoggedIn) {

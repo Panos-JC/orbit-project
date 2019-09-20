@@ -22,7 +22,6 @@ export default {
     const username = this.$store.state.route.params.username
     const data = (await UsersService.show(username)).data
     this.userInfo = data.userInfo
-    console.log(this.userInfo)
     this.userStats = data.stats
 
     this.followers = (await UsersService.followers(username)).data.followers

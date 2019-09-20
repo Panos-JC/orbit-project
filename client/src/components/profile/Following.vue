@@ -25,7 +25,6 @@ export default {
     this.userStats = data.stats
 
     this.following = (await UsersService.following(username)).data.following
-    console.log(this.following)
     this.dataLoaded = true
   },
   components: {

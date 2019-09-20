@@ -1,21 +1,13 @@
 <template>
-  <v-card v-if="place">
+  <v-card v-if="place" class="fill-height align-end">
     <a :href="'#/places/' + place.place_id">
-      <v-img :src="photo" height="200px">
-        <v-container fluid fill-height>
-          <v-layout fill-height>
-            <v-flex xs12 flexbox>
-            </v-flex>
-          </v-layout>
-        </v-container>
+      <v-img :src="photo" height="200px" class="white--text" gradient="to bottom, rgba(0,0,0,0), rgba(0,0,0,0.6)">
+        <v-card-title
+          class="fill-height align-end title"
+          v-text="place.name"
+        ></v-card-title>
       </v-img>
     </a>
-    <v-card-actions class="pa-3" >
-      <div class="name">{{place.name}}</div>
-      <v-btn fab small color="primary" class="add-btn">
-        <v-icon>add</v-icon>
-      </v-btn>
-    </v-card-actions>
   </v-card>
 </template>
 
@@ -60,9 +52,4 @@ export default {
   letter-spacing: .01em;
 }
 
-.add-btn {
-  position: absolute;
-  right: 10px;
-  bottom: 32px;
-}
 </style>

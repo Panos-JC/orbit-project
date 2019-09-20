@@ -3,12 +3,12 @@
     <v-layout wrap>
       <v-flex xs4 v-for="user in users" :key="user._id">
         <v-card>
-          <v-card-media
+          <v-img
             class="white--text"
             height="100px"
             src="https://dummyimage.com/600x200/858585/ffffff"
           >
-          </v-card-media>
+          </v-img>
           <v-card-title class="card-title">
             <div class="card-container">
               <v-avatar class="avatar" size="65">
@@ -17,12 +17,7 @@
               <a href="" class="name text-xs-left">{{user.properties.fname}} {{user.properties.lname}}</a>
               <a href="" class="username text-xs-left">@{{user.properties.username}}</a>
             </div>
-            <v-btn v-if="$store.state.isUserLoggedIn" small outline round color="primary" class="follow">Follow</v-btn>
-            <!-- <v-btn v-if="following" small depressed round color="primary" class="follow following" v-on:mouseover="word='Unfollow'" @mouseleave="word='Following'">{{word}}</v-btn> -->
           </v-card-title>
-          <v-card-actions class="actions">
-            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
-          </v-card-actions>
         </v-card>
       </v-flex>
     </v-layout>
@@ -31,9 +26,11 @@
 
 <script>
 export default {
-  props: [
-    'users'
-  ]
+  props: {
+    users: {
+      type: Array
+    }
+  }
 }
 </script>
 
@@ -80,19 +77,6 @@ export default {
   left: 0;
   img {
     border: 3px solid #fff;
-  }
-}
-
-.follow {
-  position: absolute;
-  right: 10px;
-  font-size: 11px;
-}
-
-.following {
-  &:hover {
-    background-color: #ac002b!important;
-    content: "ela";
   }
 }
 </style>

@@ -3,7 +3,7 @@
   <img
     height="100%"
     width="100%"
-    src="https://dummyimage.com/600x200/858585/a68fa6.jpg&text=+"
+    src="https://dummyimage.com/500x200/545454/8c8c8c"
   >
   <v-card-title class="card-title">
     <div class="card-container">
@@ -17,19 +17,19 @@
   <v-card-actions class="actions">
     <ul class="stats">
       <li class="stat">
-        <a href="">
+        <a :href="'#/users/' + userInfo.username + '/posts'">
           <span class="stat-label">Posts</span>
           <span class="stat-value">{{userInfo.posts}}</span>
         </a>
       </li>
       <li class="stat">
-        <a href="">
+        <a :href="'#/users/' + userInfo.username + '/following'">
           <span class="stat-label">Following</span>
           <span class="stat-value">{{userInfo.following}}</span>
         </a>
       </li>
       <li class="stat">
-        <a href="">
+        <a :href="'#/users/' + userInfo.username + '/followers'">
           <span class="stat-label">Followers</span>
           <span class="stat-value">{{userInfo.followers}}</span>
         </a>
@@ -50,7 +50,6 @@ export default {
   },
   async created () {
     this.userInfo = (await UserService.userInfo(this.$store.state.user.properties.username)).data
-    console.log(this.userInfo)
   }
 }
 </script>
