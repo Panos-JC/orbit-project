@@ -31,6 +31,7 @@ export default {
       try {
         this.posts = (await PostService.getPosts(this.$store.state.user.properties.username)).data
         this.loading = false
+        console.log(this.posts)
       } catch (error) {
         console.log(error)
         this.loading = false

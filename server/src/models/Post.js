@@ -114,7 +114,7 @@ Post.createReply = (username, postId, reply, callback) => {
 Post.getPosts = (username, callback) => {
   const qp = {
     query: [
-      'MATCH (loggedIn:User {username: {username}})-[:FOLLOWS]-(followee:User)-[r:POSTED|REPOSTED]->(post:Post)',
+      'MATCH (loggedIn:User {username: {username}})-[:FOLLOWS]->(followee:User)-[r:POSTED|REPOSTED]->(post:Post)',
       'MATCH (post)<-[:POSTED]-(poster:User)',
       'OPTIONAL MATCH (post)<-[:LIKED]-(liker:User) WHERE liker.username = loggedIn.username',
       'OPTIONAL MATCH (post)<-[l:LIKED]-()',

@@ -1,13 +1,14 @@
 <template>
   <v-container class="pb-1">
     <v-layout wrap>
-      <v-flex xs12 v-if="post.reposter">
+      <v-flex xs12 v-if="post.reposter || post.reposted">
         <div class="postContext">
           <span class="repostIcon">
             <v-icon>repeat</v-icon>
           </span>
           <span class="repostText">
-            <a href="">{{post.reposter}}</a>
+            <a v-if="post.reposter" :href="'#/users/' + post.reposter + '/posts'">{{post.reposter}}</a>
+            <a v-else :href="'#/users/' + $store.state.user.properties.username + '/posts'">You</a>
             Reposted
           </span>
         </div>
@@ -31,7 +32,7 @@
           </a>
         </div>
         <div class="replyContext text-xs-left" v-if="post.reply">
-          Replying to <a :href="'#/users/' + post.reply">@{{post.reply}}</a>
+          Replying to <a :href="'#/users/' + post.reply">@{{post.reply}}'s</a> post
         </div>
         <div class="post-container ml-3">
           <p class="postText text-xs-left mb-1">
