@@ -41,7 +41,7 @@ export default {
     logout () {
       this.$store.dispatch('clearStore', null)
       this.$router.push({
-        name: 'home'
+        name: 'login'
       })
     },
     profile () {

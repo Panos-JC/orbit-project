@@ -65,11 +65,7 @@ export default {
         this.$store.dispatch('setUser', response.data.user)
         this.$store.dispatch('setNotifications', notifications)
 
-        this.$router.push({
-          name: 'profile',
-          params: {
-            username: this.$store.state.user.properties.username
-          }})
+        this.$router.push({ name: 'home' })
       } catch (error) {
         console.log(error)
       }

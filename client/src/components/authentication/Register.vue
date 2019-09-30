@@ -81,11 +81,7 @@ export default {
         this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUser', response.data.user)
 
-        this.$router.push({
-          name: 'profile',
-          params: {
-            username: this.$store.state.user.properties.username
-          }})
+        this.$router.push({ name: 'home' })
       } catch (error) {
         this.error = error.response.data.message
       }

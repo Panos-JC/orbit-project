@@ -49,6 +49,7 @@ export default new Router({
       children: [
         {
           path: 'posts',
+          name: 'profilePosts',
           component: Posts
         },
         {
