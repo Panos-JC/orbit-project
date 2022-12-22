@@ -22,7 +22,7 @@
     "express": "^4.16.2",
     "express-session": "^1.15.6",
     "joi": "^13.1.2",
-    "jsonwebtoken": "^8.2.0",
+    "jsonwebtoken": "^9.0.0",
     "morgan": "^1.9.1",
     "neo4j": "^2.0.0-RC2",
     "node-fetch": "^2.3.0",
